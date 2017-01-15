@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                horizontalCalendar.goToday(true);
+                horizontalCalendar.goToday(false);
             }
         });
 
