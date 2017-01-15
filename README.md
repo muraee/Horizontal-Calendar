@@ -1,7 +1,7 @@
 # Horizontal Calendar
 A horizontal calendar view for Android
 
-![demo](HorizontalCalendar/art/demo.gif?raw=true)
+![demo](/art/demo.gif)
 
 ## Installation
 The library is hosted on jcenter, add this to your **build.gradle**:
