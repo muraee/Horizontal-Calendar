@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HorizontalCalendarView">
+        <!-- Text color for all dates except selected Date.-->
+        <attr name="textColorNormal" format="color" />
+        <!-- Text color for selected Date. -->
+        <attr name="textColorSelected" format="color" />
+        <!-- Background color for selector bar. -->
+        <attr name="selectorColor" format="color" />
+        <!-- Background color for selected date item. -->
+        <attr name="selectedDateBackground" format="color" />
+    </declare-styleable>
+</resources>

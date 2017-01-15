@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'horizontal-calendar'
+
+    publishedGroupId = 'devs.mulham.horizontalcalendar'
+    libraryName = 'Horizontal Calendar'
+    artifact = 'horizontalcalendar'
+
+    libraryDescription = 'A horizontal calendar view for Android'
+
+    siteUrl = 'https://bitbucket.org/Mulham_Raee/horizontal-calender'
+    gitUrl = 'https://bitbucket.org/Mulham_Raee/horizontal-calender.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'mulham-raee'
+    developerName = 'Mulham Raee'
+    developerEmail = 'mulham.raee@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
+
+    lintOptions {
+        abortOnError false
+    }
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 25
+        versionCode 1
+        versionName version
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:recyclerview-v7:25.1.0'
+}
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
