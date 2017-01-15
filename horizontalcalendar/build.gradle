@@ -10,8 +10,8 @@ ext {
 
     libraryDescription = 'A horizontal calendar view for Android'
 
-    siteUrl = 'https://bitbucket.org/Mulham_Raee/horizontal-calender'
-    gitUrl = 'https://bitbucket.org/Mulham_Raee/horizontal-calender.git'
+    siteUrl = 'https://github.com/Mulham-Raee/HorizontalCalendarLibrary'
+    gitUrl = 'https://github.com/Mulham-Raee/HorizontalCalendarLibrary.git'
 
     libraryVersion = '1.0.0'
 
