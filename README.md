@@ -10,19 +10,89 @@ A horizontal calendar view for Android
 ## Installation
 The library is hosted on jcenter, add this to your **build.gradle**:
 
-    repositories {
+```gradle
+repositories {
       jcenter()
     }
     
     dependencies {
       compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.0.0'
     }
+```
 
 ##Prerequisites
 The minimum API level supported by this library is **API 9 (GINGERBREAD)**.
 
 ## Usage
-TODO: Write usage instructions
+Add HorizontalCalendarView to your layout file, for example:
+
+```xml
+<android.support.design.widget.AppBarLayout
+		............ >
+		
+        <devs.mulham.horizontalcalendar.HorizontalCalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:textColorSelected="#FFFF"/>
+            
+</android.support.design.widget.AppBarLayout>
+```
+
+In your Activity, define your **start** and **end** dates to set the range of the calendar:
+
+```java
+/** end after 1 month from now */
+Calendar endDate = Calendar.getInstance();
+endDate.add(Calendar.MONTH, 1);
+
+/** start before 1 month from now */
+Calendar startDate = Calendar.getInstance();
+startDate.add(Calendar.MONTH, -1);
+```
+
+Then setup **HorizontalCalendarView** using its Builder and pass the **id**: 
+
+```java
+HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
+                .startDate(startDate.getTime())
+                .endDate(endDate.getTime())
+                .build();
+```
+
+To listen to date change events you need to set a listener:
+
+```java
+horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
+            @Override
+            public void onDateSelected(Date date, int position) {
+                //do something
+            }
+        });
+```
+
+You can also listen to **scroll** and **long press** events by overriding each prespective method within **HorizontalCalendarListener**:
+
+```java
+horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
+            @Override
+            public void onDateSelected(Date date, int position) {
+
+            }
+
+            @Override
+            public void onCalendarScroll(HorizontalCalendarView calendarView, 
+            int dx, int dy) {
+                
+            }
+
+            @Override
+            public boolean onDateLongClicked(Date date, int position) {
+                return true;
+            }
+        });
+```
 
 ## Contributing
 Contributions are welcome, feel free to submit a pull request.
