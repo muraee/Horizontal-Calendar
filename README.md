@@ -1,4 +1,8 @@
 # Horizontal Calendar
+
+[ ![Download](https://img.shields.io/bintray/v/mulham-raee/maven/horizontal-calendar.svg) ](https://bintray.com/mulham-raee/maven/horizontal-calendar/_latestVersion)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 A horizontal calendar view for Android
 
 ![demo](/art/demo.gif)
