@@ -1,6 +1,6 @@
 # Horizontal Calendar
 
-[ ![Download](https://img.shields.io/bintray/v/mulham-raee/maven/horizontal-calendar.svg) ](https://bintray.com/mulham-raee/maven/horizontal-calendar/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/mulham-raee/maven/horizontal-calendar/images/download.svg) ](https://bintray.com/mulham-raee/maven/horizontal-calendar/_latestVersion)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A horizontal calendar view for Android
@@ -24,7 +24,7 @@ repositories {
 The minimum API level supported by this library is **API 9 (GINGERBREAD)**.
 
 ## Usage
-Add HorizontalCalendarView to your layout file, for example:
+Add `HorizontalCalendarView` to your layout file, for example:
 
 ```xml
 <android.support.design.widget.AppBarLayout
