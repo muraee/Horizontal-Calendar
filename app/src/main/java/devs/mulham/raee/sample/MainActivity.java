@@ -17,6 +17,7 @@ import java.util.Date;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
 
+
 public class MainActivity extends AppCompatActivity {
 
     HorizontalCalendar horizontalCalendar;
@@ -40,8 +41,11 @@ public class MainActivity extends AppCompatActivity {
                 .startDate(startDate.getTime())
                 .endDate(endDate.getTime())
                 .datesNumberOnScreen(5)
-                .dayFormat("EEE")
+                .dayNameFormat("EEE")
                 .dayNumberFormat("dd")
+                .monthFormat("MMM")
+                .showDayName(true)
+                .showMonthName(true)
                 .textColor(Color.LTGRAY, Color.WHITE)
                 .selectedDateBackground(Color.TRANSPARENT)
                 .build();

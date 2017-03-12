@@ -11,7 +11,7 @@ import android.util.TypedValue;
  * See {devs.mulham.horizontalcalendar.R.styleable#HorizontalCalendarView HorizontalCalendarView Attributes}
  *
  * @author Mulham-Raee
- * @version 1.0
+ * @version 1.1
  */
 public class HorizontalCalendarView extends RecyclerView {
 

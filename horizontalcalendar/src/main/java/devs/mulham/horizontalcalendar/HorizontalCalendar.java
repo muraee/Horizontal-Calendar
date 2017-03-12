@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -17,11 +17,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+
 /**
  * See {@link HorizontalCalendarView HorizontalCalendarView}
  *
  * @author Mulham-Raee
- * @version 1.0
+ * @version 1.1
  * @see HorizontalCalendarListener
  */
 public class HorizontalCalendar {
@@ -30,7 +31,6 @@ public class HorizontalCalendar {
     private HorizontalCalendarView calendarView;
     private HorizontalCalendarAdapter mCalendarAdapter;
     private ArrayList<Date> mListDays;
-    private boolean centerToday;
     private boolean loading;
     private DateHandler handler;
 
@@ -47,8 +47,8 @@ public class HorizontalCalendar {
                 //On scroll end, the dateSelect event is call
                 //and agenda is center to the good item
                 int position = calendarView.getPositionOfCenterItem();
-                adjustCalendarLocation();
-                if (calendarListener != null){
+
+                if (calendarListener != null) {
                     calendarListener.onDateSelected(mListDays.get(position), position);
                 }
 
@@ -69,25 +69,30 @@ public class HorizontalCalendar {
 
             }
 
-            if (calendarListener != null){
+            if (calendarListener != null) {
                 calendarListener.onCalendarScroll(calendarView, dx, dy);
             }
 
         }
     };
+
     //RootView
-    private View rootView;
-    //private Context context;
-    private int calendarId;
+    private final View rootView;
+    private final int calendarId;
     //Number of Dates to Show on Screen
-    private int numberOfDatesOnScreen;
+    private final int numberOfDatesOnScreen;
     /* Format & Colors*/
     private SimpleDateFormat dateFormat;
-    private String formatDay;
-    private String formatDayNumber;
+    private final String formatDayName;
+    private final String formatDayNumber;
+    private final String formatMonth;
     private int textColorNormal, textColorSelected;
     private int selectedDateBackground;
     private int selectorColor;
+
+    private final boolean centerToday;
+    private final boolean showMonthName;
+    private final boolean showDayName;
     //endregion
 
     /**
@@ -100,12 +105,15 @@ public class HorizontalCalendar {
         this.textColorSelected = builder.textColorSelected;
         this.selectedDateBackground = builder.selectedDateBackground;
         this.selectorColor = builder.selectorColor;
-        this.formatDay = builder.formatDay;
+        this.formatDayName = builder.formatDayName;
         this.formatDayNumber = builder.formatDayNumber;
+        this.formatMonth = builder.formatMonth;
         this.numberOfDatesOnScreen = builder.numberOfDatesOnScreen;
         this.dateStartCalendar = builder.dateStartCalendar;
         this.dateEndCalendar = builder.dateEndCalendar;
         this.centerToday = builder.centerToday;
+        this.showDayName = builder.showDayName;
+        this.showMonthName = builder.showMonthName;
 
         handler = new DateHandler(this);
     }
@@ -120,6 +128,10 @@ public class HorizontalCalendar {
         calendarView.setHasFixedSize(true);
         calendarView.setHorizontalScrollBarEnabled(false);
         calendarView.setHorizontalCalendar(this);
+
+        LinearSnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(calendarView);
+
         calendarView.setVisibility(View.INVISIBLE);
 
         new InitializeDatesList().execute();
@@ -138,7 +150,7 @@ public class HorizontalCalendar {
      * Select today date and center the Horizontal Calendar to this date
      *
      * @param immediate pass true to make the calendar scroll as fast as possible to reach the date of today
-     *                  ,or false to play default scroll animation speed.
+     * ,or false to play default scroll animation speed.
      */
     public void goToday(boolean immediate) {
         selectDate(new Date(), immediate);
@@ -148,9 +160,9 @@ public class HorizontalCalendar {
     /**
      * Select the date and center the Horizontal Calendar to this date
      *
-     * @param date      The date to select
+     * @param date The date to select
      * @param immediate pass true to make the calendar scroll as fast as possible to reach the target date
-     *                  ,or false to play default scroll animation speed.
+     * ,or false to play default scroll animation speed.
      */
     public void selectDate(Date date, boolean immediate) {
         if (loading) {
@@ -219,7 +231,7 @@ public class HorizontalCalendar {
     }
 
     @TargetApi(21)
-    public void setElevation(float elevation){
+    public void setElevation(float elevation) {
         calendarView.setElevation(elevation);
     }
 
@@ -263,12 +275,24 @@ public class HorizontalCalendar {
         return dateEndCalendar;
     }
 
-    public String getFormatDay() {
-        return formatDay;
+    public String getFormatDayName() {
+        return formatDayName;
     }
 
     public String getFormatDayNumber() {
         return formatDayNumber;
+    }
+
+    public String getFormatMonth() {
+        return formatMonth;
+    }
+
+    public boolean isShowDayName() {
+        return showDayName;
+    }
+
+    public boolean isShowMonthName() {
+        return showMonthName;
     }
 
     public int getNumberOfDatesOnScreen() {
@@ -323,26 +347,6 @@ public class HorizontalCalendar {
         return position;
     }
 
-    private void adjustCalendarLocation() {
-
-        //Selection item is the firstItemVisible
-        //So the selected item is set to the position - the number of dates /2
-        int position = calendarView.getPositionOfCenterItem();
-        if (position != -1) {
-            int shiftCells = numberOfDatesOnScreen / 2;
-
-            /*if (position - shiftCells >= 0) {
-                calendarView.scrollToPosition(position - shiftCells );
-            } else {
-                calendarView.scrollToPosition(position);
-            }
-
-            mCalendarAdapter.notifyDataSetChanged();*/
-            calendarView.getLayoutManager().scrollToPositionWithOffset(position - shiftCells, 0);
-        }
-
-    }
-
     /**
      * @return true if dates are equal
      */
@@ -353,29 +357,31 @@ public class HorizontalCalendar {
 
     public static class Builder {
 
-        //private final Context context;
-        private final int viewId;
-        private final View rootView;
+        final int viewId;
+        final View rootView;
 
         //Start & End Dates
-        private Date dateStartCalendar;
-        private Date dateEndCalendar;
+        Date dateStartCalendar;
+        Date dateEndCalendar;
 
         //Number of Days to Show on Screen
-        private int numberOfDatesOnScreen;
+        int numberOfDatesOnScreen;
 
         /* Format & Colors*/
-        private String formatDay;
-        private String formatDayNumber;
-        private int textColorNormal, textColorSelected;
-        private int selectedDateBackground;
-        private int selectorColor;
+        String formatDayName;
+        String formatDayNumber;
+        String formatMonth;
+        int textColorNormal, textColorSelected;
+        int selectedDateBackground;
+        int selectorColor;
 
-        private boolean centerToday = true;
+        boolean showMonthName = true;
+        boolean showDayName = true;
+        boolean centerToday = true;
 
         /**
          * @param rootView pass the rootView for the Fragment where HorizontalCalendar is attached
-         * @param viewId   the id specified for HorizontalCalendarView in your layout
+         * @param viewId the id specified for HorizontalCalendarView in your layout
          */
         public Builder(View rootView, int viewId) {
             this.rootView = rootView;
@@ -384,7 +390,7 @@ public class HorizontalCalendar {
 
         /**
          * @param activity pass the activity where HorizontalCalendar is attached
-         * @param viewId   the id specified for HorizontalCalendarView in your layout
+         * @param viewId the id specified for HorizontalCalendarView in your layout
          */
         public Builder(Activity activity, int viewId) {
             this.rootView = activity.getWindow().getDecorView();
@@ -411,13 +417,18 @@ public class HorizontalCalendar {
             return this;
         }
 
-        public Builder dayFormat(String formatDay) {
-            this.formatDay = formatDay;
+        public Builder dayNameFormat(String format) {
+            this.formatDayName = format;
             return this;
         }
 
-        public Builder dayNumberFormat(String formatDayNumber) {
-            this.formatDayNumber = formatDayNumber;
+        public Builder dayNumberFormat(String format) {
+            this.formatDayNumber = format;
+            return this;
+        }
+
+        public Builder monthFormat(String format) {
+            this.formatMonth = format;
             return this;
         }
 
@@ -437,6 +448,16 @@ public class HorizontalCalendar {
             return this;
         }
 
+        public Builder showDayName(boolean value) {
+            showDayName = value;
+            return this;
+        }
+
+        public Builder showMonthName(boolean value) {
+            showMonthName = value;
+            return this;
+        }
+
         /**
          * @return Instance of {@link HorizontalCalendar} initiated with builder settings
          */
@@ -452,11 +473,15 @@ public class HorizontalCalendar {
             if (numberOfDatesOnScreen <= 0) {
                 numberOfDatesOnScreen = 5;
             }
-            if (formatDay == null) {
-                formatDay = "EEE";
+
+            if ((formatDayName == null) && showDayName) {
+                formatDayName = "EEE";
             }
             if (formatDayNumber == null) {
                 formatDayNumber = "dd";
+            }
+            if ((formatMonth == null) && showMonthName) {
+                formatDayName = "MMM";
             }
             if (dateStartCalendar == null) {
                 Calendar c = Calendar.getInstance();
