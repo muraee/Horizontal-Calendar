@@ -481,7 +481,7 @@ public class HorizontalCalendar {
                 formatDayNumber = "dd";
             }
             if ((formatMonth == null) && showMonthName) {
-                formatDayName = "MMM";
+                formatMonth = "MMM";
             }
             if (dateStartCalendar == null) {
                 Calendar c = Calendar.getInstance();
