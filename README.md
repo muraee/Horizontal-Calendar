@@ -24,7 +24,7 @@ repositories {
 The minimum API level supported by this library is **API 9 (GINGERBREAD)**.
 
 ## Usage
-Add `HorizontalCalendarView` to your layout file, for example:
+- Add `HorizontalCalendarView` to your layout file, for example:
 
 ```xml
 <android.support.design.widget.AppBarLayout
@@ -40,7 +40,7 @@ Add `HorizontalCalendarView` to your layout file, for example:
 </android.support.design.widget.AppBarLayout>
 ```
 
-In your Activity, define your **start** and **end** dates to set the range of the calendar:
+- In your Activity or Fragment, define your **start** and **end** dates to set the range of the calendar:
 
 ```java
 /** end after 1 month from now */
@@ -52,7 +52,7 @@ Calendar startDate = Calendar.getInstance();
 startDate.add(Calendar.MONTH, -1);
 ```
 
-Then setup **HorizontalCalendarView** using its Builder and pass the **id**: 
+- Then setup `HorizontalCalendar` in your **Activity** through its Builder: 
 
 ```java
 HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
@@ -61,7 +61,14 @@ HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.i
                 .build();
 ```
 
-To listen to date change events you need to set a listener:
+- Or if you are using a **Fragment**:
+
+```java
+HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(rootView, R.id.calendarView)
+	...................
+```
+
+- To listen to date change events you need to set a listener:
 
 ```java
 horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
@@ -72,7 +79,7 @@ horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
         });
 ```
 
-You can also listen to **scroll** and **long press** events by overriding each prespective method within **HorizontalCalendarListener**:
+- You can also listen to **scroll** and **long press** events by overriding each prespective method within **HorizontalCalendarListener**:
 
 ```java
 horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
