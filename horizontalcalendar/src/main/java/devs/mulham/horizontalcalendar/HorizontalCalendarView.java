@@ -18,8 +18,12 @@ public class HorizontalCalendarView extends RecyclerView {
     int textColorNormal, textColorSelected;
     int selectedDateBackground;
     int selectorColor;
+    float textSizeMonthName, textSizeDayNumber, textSizeDayName;
     private HorizontalCalendar horizontalCalendar;
     private final float FLING_SCALE_DOWN_FACTOR = 0.5f;
+    private final float DEFAULT_TEXT_SIZE_MONTH_NAME = 14f;
+    private final float DEFAULT_TEXT_SIZE_DAY_NUMBER = 24f;
+    private final float DEFAULT_TEXT_SIZE_DAY_NAME = 14f;
 
     public HorizontalCalendarView(Context context) {
         super(context);
@@ -38,10 +42,15 @@ public class HorizontalCalendarView extends RecyclerView {
             textColorSelected = a.getColor(R.styleable.HorizontalCalendarView_textColorSelected, Color.BLACK);
             selectedDateBackground = a.getColor(R.styleable.HorizontalCalendarView_selectedDateBackground, Color.TRANSPARENT);
             selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, fetchAccentColor());
+            textSizeMonthName = a.getDimension(R.styleable.HorizontalCalendarView_textSizeMonthName,
+                    DEFAULT_TEXT_SIZE_MONTH_NAME);
+            textSizeDayNumber = a.getDimension(R.styleable.HorizontalCalendarView_textSizeDayNumber,
+                    DEFAULT_TEXT_SIZE_DAY_NUMBER);
+            textSizeDayName = a.getDimension(R.styleable.HorizontalCalendarView_textSizeDayName,
+                    DEFAULT_TEXT_SIZE_DAY_NAME);
         } finally {
             a.recycle();
         }
-
     }
 
     @Override
@@ -107,6 +116,15 @@ public class HorizontalCalendarView extends RecyclerView {
         if (horizontalCalendar.getSelectedDateBackground() == 0) {
             horizontalCalendar.setSelectedDateBackground(selectedDateBackground);
         }
+        if (horizontalCalendar.getTextSizeMonthName() == 0) {
+            horizontalCalendar.setTextSizeMonthName(textSizeMonthName);
+        }
+        if (horizontalCalendar.getTextSizeDayNumber() == 0) {
+            horizontalCalendar.setTextSizeDayNumber(textSizeDayNumber);
+        }
+        if (horizontalCalendar.getTextSizeDayName() == 0) {
+            horizontalCalendar.setTextSizeDayName(textSizeDayName);
+        }
 
         this.horizontalCalendar = horizontalCalendar;
     }
@@ -122,5 +140,4 @@ public class HorizontalCalendarView extends RecyclerView {
         }
         return firstVisibilePosition + (numberOfDatesOnScreen / 2);
     }
-
 }

@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,19 +100,24 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             holder.txtDayName.setTextColor(horizontalCalendar.getTextColorNormal());
             holder.layoutBackground.setBackgroundColor(Color.TRANSPARENT);
             holder.selectionView.setVisibility(View.INVISIBLE);
-
         }
 
         holder.txtDayNumber.setText(DateFormat.format(horizontalCalendar.getFormatDayNumber(), day).toString());
+        holder.txtDayNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                horizontalCalendar.getTextSizeDayNumber());
 
-        if (horizontalCalendar.isShowDayName()){
+        if (horizontalCalendar.isShowDayName()) {
             holder.txtDayName.setText(DateFormat.format(horizontalCalendar.getFormatDayName(), day).toString());
+            holder.txtDayName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    horizontalCalendar.getTextSizeDayName());
         } else {
             holder.txtDayName.setVisibility(View.GONE);
         }
 
-        if (horizontalCalendar.isShowMonthName()){
+        if (horizontalCalendar.isShowMonthName()) {
             holder.txtMonthName.setText(DateFormat.format(horizontalCalendar.getFormatMonth(), day).toString());
+            holder.txtMonthName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                    horizontalCalendar.getTextSizeMonthName());
         } else {
             holder.txtMonthName.setVisibility(View.GONE);
         }
@@ -162,7 +168,6 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             txtMonthName = (TextView) rootView.findViewById(R.id.monthName);
             layoutBackground = rootView.findViewById(R.id.layoutBackground);
             selectionView = rootView.findViewById(R.id.selection_view);
-
         }
     }
 }
