@@ -81,7 +81,7 @@ public class HorizontalCalendar {
     private final int calendarId;
     //Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
-    /* Format & Colors*/
+    /* Format, Colors & Font Sizes*/
     private SimpleDateFormat dateFormat;
     private final String formatDayName;
     private final String formatDayNumber;
@@ -89,6 +89,7 @@ public class HorizontalCalendar {
     private int textColorNormal, textColorSelected;
     private int selectedDateBackground;
     private int selectorColor;
+    private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
     private final boolean centerToday;
     private final boolean showMonthName;
@@ -108,6 +109,9 @@ public class HorizontalCalendar {
         this.formatDayName = builder.formatDayName;
         this.formatDayNumber = builder.formatDayNumber;
         this.formatMonth = builder.formatMonth;
+        this.textSizeMonthName = builder.textSizeMonthName;
+        this.textSizeDayNumber = builder.textSizeDayNumber;
+        this.textSizeDayName = builder.textSizeDayName;
         this.numberOfDatesOnScreen = builder.numberOfDatesOnScreen;
         this.dateStartCalendar = builder.dateStartCalendar;
         this.dateEndCalendar = builder.dateEndCalendar;
@@ -135,7 +139,6 @@ public class HorizontalCalendar {
         calendarView.setVisibility(View.INVISIBLE);
 
         new InitializeDatesList().execute();
-
     }
 
     public HorizontalCalendarListener getCalendarListener() {
@@ -331,6 +334,29 @@ public class HorizontalCalendar {
         this.selectorColor = selectorColor;
     }
 
+    public float getTextSizeMonthName() {
+        return textSizeMonthName;
+    }
+
+    public void setTextSizeMonthName(float textSizeMonthName) {
+        this.textSizeMonthName = textSizeMonthName;
+    }
+
+    public float getTextSizeDayNumber() {
+        return textSizeDayNumber;
+    }
+
+    public void setTextSizeDayNumber(float textSizeDayNumber) {
+        this.textSizeDayNumber = textSizeDayNumber;
+    }
+
+    public float getTextSizeDayName() {
+        return textSizeDayName;
+    }
+
+    public void setTextSizeDayName(float textSizeDayName) {
+        this.textSizeDayName = textSizeDayName;
+    }
     //endregion
 
     /**
@@ -367,13 +393,14 @@ public class HorizontalCalendar {
         //Number of Days to Show on Screen
         int numberOfDatesOnScreen;
 
-        /* Format & Colors*/
+        /* Format, Colors & Font Sizes*/
         String formatDayName;
         String formatDayNumber;
         String formatMonth;
         int textColorNormal, textColorSelected;
         int selectedDateBackground;
         int selectorColor;
+        private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
         boolean showMonthName = true;
         boolean showDayName = true;
@@ -445,6 +472,51 @@ public class HorizontalCalendar {
 
         public Builder selectorColor(int selectorColor) {
             this.selectorColor = selectorColor;
+            return this;
+        }
+
+        /**
+         * Set the text size of the labels in scale-independent pixels
+         *
+         * @param textSizeMonthName the month name text size, in SP
+         * @param textSizeDayNumber the day number text size, in SP
+         * @param textSizeDayName   the day name text size, in SP
+         */
+        public Builder textSize(float textSizeMonthName, float textSizeDayNumber,
+                                float textSizeDayName) {
+            this.textSizeMonthName = textSizeMonthName;
+            this.textSizeDayNumber = textSizeDayNumber;
+            this.textSizeDayName = textSizeDayName;
+            return this;
+        }
+
+        /**
+         * Set the text size of the month name label in scale-independent pixels
+         *
+         * @param textSizeMonthName the month name text size, in SP
+         */
+        public Builder textSizeMonthName(float textSizeMonthName) {
+            this.textSizeMonthName = textSizeMonthName;
+            return this;
+        }
+
+        /**
+         * Set the text size of the day number label in scale-independent pixels
+         *
+         * @param textSizeDayNumber the day number text size, in SP
+         */
+        public Builder textSizeDayNumber(float textSizeDayNumber) {
+            this.textSizeDayNumber = textSizeDayNumber;
+            return this;
+        }
+
+        /**
+         * Set the text size of the day name label in scale-independent pixels
+         *
+         * @param textSizeDayName the day name text size, in SP
+         */
+        public Builder textSizeDayName(float textSizeDayName) {
+            this.textSizeDayName = textSizeDayName;
             return this;
         }
 

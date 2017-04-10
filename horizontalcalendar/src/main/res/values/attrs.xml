@@ -9,5 +9,11 @@
         <attr name="selectorColor" format="color" />
         <!-- Background color for selected date item. -->
         <attr name="selectedDateBackground" format="color" />
+        <!-- Text size for month name. -->
+        <attr name="textSizeMonthName" format="dimension" />
+        <!-- Text size for day number. -->
+        <attr name="textSizeDayNumber" format="dimension" />
+        <!-- Text size for day name. -->
+        <attr name="textSizeDayName" format="dimension" />
     </declare-styleable>
 </resources>
