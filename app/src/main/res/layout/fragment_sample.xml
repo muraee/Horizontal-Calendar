@@ -26,19 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
-            app:textColorSelected="#FFFF"
-            app:textSizeDayName="14sp"
-            app:textSizeDayNumber="20sp"/>
+            app:textColorSelected="#FFFF"/>
 
     </android.support.design.widget.AppBarLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_calendar_24dp"/>
 
 </RelativeLayout>

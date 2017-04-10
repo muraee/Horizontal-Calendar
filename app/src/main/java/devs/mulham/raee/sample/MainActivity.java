@@ -17,10 +17,9 @@ import java.util.Date;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
 
-
 public class MainActivity extends AppCompatActivity {
 
-    HorizontalCalendar horizontalCalendar;
+    private HorizontalCalendar horizontalCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

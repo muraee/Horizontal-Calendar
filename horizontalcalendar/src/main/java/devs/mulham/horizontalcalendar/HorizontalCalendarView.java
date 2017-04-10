@@ -15,11 +15,12 @@ import android.util.TypedValue;
  */
 public class HorizontalCalendarView extends RecyclerView {
 
-    int textColorNormal, textColorSelected;
-    int selectedDateBackground;
-    int selectorColor;
-    float textSizeMonthName, textSizeDayNumber, textSizeDayName;
+    private int textColorNormal, textColorSelected;
+    private int selectedDateBackground;
+    private int selectorColor;
+    private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
     private HorizontalCalendar horizontalCalendar;
+
     private final float FLING_SCALE_DOWN_FACTOR = 0.5f;
     private final float DEFAULT_TEXT_SIZE_MONTH_NAME = 14f;
     private final float DEFAULT_TEXT_SIZE_DAY_NUMBER = 24f;
@@ -42,15 +43,29 @@ public class HorizontalCalendarView extends RecyclerView {
             textColorSelected = a.getColor(R.styleable.HorizontalCalendarView_textColorSelected, Color.BLACK);
             selectedDateBackground = a.getColor(R.styleable.HorizontalCalendarView_selectedDateBackground, Color.TRANSPARENT);
             selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, fetchAccentColor());
-            textSizeMonthName = a.getDimension(R.styleable.HorizontalCalendarView_textSizeMonthName,
+
+            textSizeMonthName = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeMonthName,
                     DEFAULT_TEXT_SIZE_MONTH_NAME);
-            textSizeDayNumber = a.getDimension(R.styleable.HorizontalCalendarView_textSizeDayNumber,
+            textSizeDayNumber = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeDayNumber,
                     DEFAULT_TEXT_SIZE_DAY_NUMBER);
-            textSizeDayName = a.getDimension(R.styleable.HorizontalCalendarView_textSizeDayName,
+            textSizeDayName = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeDayName,
                     DEFAULT_TEXT_SIZE_DAY_NAME);
         } finally {
             a.recycle();
         }
+    }
+
+    /**
+     *  get the raw value from a complex value ( Ex: complex = 14sp, returns 14)
+     */
+    private float getRawSizeValue(TypedArray a ,int index, float defValue){
+        TypedValue outValue = new TypedValue();
+        boolean result = a.getValue(index, outValue);
+        if (!result){
+            return defValue;
+        }
+
+        return TypedValue.complexToFloat(outValue.data);
     }
 
     @Override
