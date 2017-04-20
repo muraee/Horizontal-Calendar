@@ -9,6 +9,11 @@ import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
+
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -363,14 +368,22 @@ public class HorizontalCalendar {
      * @return position of date in Calendar, or -1 if date does not exist
      */
     public int positionOfDate(Date date) {
-        int position = -1;
-        for (int i = 0; i < mListDays.size(); i++) {
-            if (isDatesDaysEquals(date, mListDays.get(i))) {
-                position = i;
-                break;
-            }
+        LocalDate prevDate = toLocalDate(mListDays.get(0));
+        LocalDate newDate = toLocalDate(date);
+
+        int diff = Days.daysBetween(prevDate, newDate).getDays();
+
+        if (diff < mListDays.size() && prevDate.isBefore(newDate)) {
+            return diff;
         }
-        return position;
+
+        return -1;
+    }
+
+    public LocalDate toLocalDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return new LocalDate (cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH));
     }
 
     /**
@@ -607,6 +620,8 @@ public class HorizontalCalendar {
             mCalendarAdapter = new HorizontalCalendarAdapter(calendarView, mListDays);
             calendarView.setAdapter(mCalendarAdapter);
             calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
+
+            JodaTimeAndroid.init(calendarView.getContext());
 
             if (centerToday) {
                 goToday(true);
