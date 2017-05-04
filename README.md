@@ -16,7 +16,7 @@ repositories {
     }
     
     dependencies {
-      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.1.0'
+      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.1.5'
     }
 ```
 
@@ -131,6 +131,7 @@ HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.i
                 .textColor(Color.LTGRAY, Color.WHITE)    // Text color for none selected Dates, Text color for selected Date.
                 .selectedDateBackground(Color.TRANSPARENT)  // Background color of the selected date cell.
                 .selectorColor(Color.RED)   // Color of the selection indicator bar (default to colorAccent).
+		.defaultSelectedDate(date)  // Date to be seleceted at start (default to Today)
                 .build();
 ```
 
