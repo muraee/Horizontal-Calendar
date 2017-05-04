@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
         Calendar startDate = Calendar.getInstance();
         startDate.add(Calendar.MONTH, -1);
 
+        final Calendar defaultDate = Calendar.getInstance();
+        defaultDate.add(Calendar.MONTH, -1);
+        defaultDate.add(Calendar.DAY_OF_WEEK, +5);
+
         horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
                 .startDate(startDate.getTime())
                 .endDate(endDate.getTime())
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 .monthFormat("MMM")
                 .showDayName(true)
                 .showMonthName(true)
+                .defaultSelectedDate(defaultDate.getTime())
                 .textColor(Color.LTGRAY, Color.WHITE)
                 .selectedDateBackground(Color.TRANSPARENT)
                 .build();

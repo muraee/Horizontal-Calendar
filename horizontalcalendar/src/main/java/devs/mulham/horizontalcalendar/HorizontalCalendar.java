@@ -57,17 +57,13 @@ public class HorizontalCalendar {
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
             //On Scroll, agenda is refresh to update background colors
-            if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_SETTLING) {
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCalendarAdapter.notifyDataSetChanged();
-                    }
-                });
-
-            }
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    mCalendarAdapter.notifyDataSetChanged();
+                }
+            });
 
             if (calendarListener != null) {
                 calendarListener.onCalendarScroll(calendarView, dx, dy);
@@ -91,7 +87,6 @@ public class HorizontalCalendar {
     private int selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
-    private final boolean centerToday;
     private final boolean showMonthName;
     private final boolean showDayName;
     //endregion
@@ -115,11 +110,10 @@ public class HorizontalCalendar {
         this.numberOfDatesOnScreen = builder.numberOfDatesOnScreen;
         this.dateStartCalendar = builder.dateStartCalendar;
         this.dateEndCalendar = builder.dateEndCalendar;
-        this.centerToday = builder.centerToday;
         this.showDayName = builder.showDayName;
         this.showMonthName = builder.showMonthName;
 
-        handler = new DateHandler(this);
+        handler = new DateHandler(this, builder.defaultSelectedDate);
     }
 
     /* Init Calendar View */
@@ -136,8 +130,7 @@ public class HorizontalCalendar {
         LinearSnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(calendarView);
 
-        calendarView.setVisibility(View.INVISIBLE);
-
+        hide();
         new InitializeDatesList().execute();
     }
 
@@ -157,7 +150,6 @@ public class HorizontalCalendar {
      */
     public void goToday(boolean immediate) {
         selectDate(new Date(), immediate);
-        mCalendarAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -173,7 +165,6 @@ public class HorizontalCalendar {
             handler.immediate = immediate;
         } else {
             if (immediate) {
-                //calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_FAST);
                 centerToPositionWithNoAnimation(positionOfDate(date));
             } else {
                 calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
@@ -214,8 +205,7 @@ public class HorizontalCalendar {
             calendarView.post(new Runnable() {
                 @Override
                 public void run() {
-                    mCalendarAdapter.notifyItemChanged(position);
-                    show();
+                    mCalendarAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -400,11 +390,11 @@ public class HorizontalCalendar {
         int textColorNormal, textColorSelected;
         int selectedDateBackground;
         int selectorColor;
-        private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
+        float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
         boolean showMonthName = true;
         boolean showDayName = true;
-        boolean centerToday = true;
+        Date defaultSelectedDate;
 
         /**
          * @param rootView pass the rootView for the Fragment where HorizontalCalendar is attached
@@ -424,8 +414,8 @@ public class HorizontalCalendar {
             this.viewId = viewId;
         }
 
-        public Builder centerToday(boolean value) {
-            centerToday = value;
+        public Builder defaultSelectedDate(Date date) {
+            defaultSelectedDate = date;
             return this;
         }
 
@@ -565,6 +555,9 @@ public class HorizontalCalendar {
                 c2.add(Calendar.MONTH, 1);
                 dateEndCalendar = c2.getTime();
             }
+            if (defaultSelectedDate == null){
+                defaultSelectedDate = new Date();
+            }
         }
     }
 
@@ -608,12 +601,7 @@ public class HorizontalCalendar {
             calendarView.setAdapter(mCalendarAdapter);
             calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
 
-            if (centerToday) {
-                goToday(true);
-            } else {
-                show();
-            }
-
+            show();
             handler.sendMessage(new Message());
             calendarView.addOnScrollListener(onScrollListener);
         }
@@ -623,10 +611,11 @@ public class HorizontalCalendar {
 
         private final WeakReference<HorizontalCalendar> horizontalCalendar;
         public Date date = null;
-        public boolean immediate;
+        public boolean immediate = true;
 
-        public DateHandler(HorizontalCalendar horizontalCalendar) {
+        public DateHandler(HorizontalCalendar horizontalCalendar, Date defaultDate) {
             this.horizontalCalendar = new WeakReference<>(horizontalCalendar);
+            this.date = defaultDate;
         }
 
         @Override

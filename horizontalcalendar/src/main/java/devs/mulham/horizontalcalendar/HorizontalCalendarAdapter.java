@@ -58,7 +58,6 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
                 if (!date.before(horizontalCalendar.getDateStartCalendar())
                         && !date.after(horizontalCalendar.getDateEndCalendar())) {
-                    //horizontalCalendarView.smoothScrollBy(stepX, 0);
                     horizontalCalendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
                     horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
                 }
