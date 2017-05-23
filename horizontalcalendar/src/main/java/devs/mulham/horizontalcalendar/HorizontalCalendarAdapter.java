@@ -54,6 +54,9 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         holder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(holder.getAdapterPosition() == -1)
+                    return;
+
                 Date date = datesList.get(holder.getAdapterPosition());
 
                 if (!date.before(horizontalCalendar.getDateStartCalendar())
