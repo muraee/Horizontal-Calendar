@@ -3,11 +3,14 @@ package devs.mulham.horizontalcalendar;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -32,6 +35,7 @@ public class HorizontalCalendar {
     private HorizontalCalendarAdapter mCalendarAdapter;
     private ArrayList<Date> mListDays;
     private boolean loading;
+    private Date defaultSelectedDate;
     private DateHandler handler;
 
     //Start & End Dates
@@ -112,6 +116,7 @@ public class HorizontalCalendar {
         this.dateEndCalendar = builder.dateEndCalendar;
         this.showDayName = builder.showDayName;
         this.showMonthName = builder.showMonthName;
+        this.defaultSelectedDate = builder.defaultSelectedDate;
 
         handler = new DateHandler(this, builder.defaultSelectedDate);
     }
@@ -131,7 +136,53 @@ public class HorizontalCalendar {
         snapHelper.attachToRecyclerView(calendarView);
 
         hide();
-        new InitializeDatesList().execute();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            loading = true;
+
+            GregorianCalendar calendar = new GregorianCalendar();
+
+            calendar.setTime(dateStartCalendar);
+            calendar.add(Calendar.DATE, -(numberOfDatesOnScreen / 2));
+            Date dateStartBefore = calendar.getTime();
+            calendar.setTime(dateEndCalendar);
+            calendar.add(Calendar.DATE, numberOfDatesOnScreen / 2);
+            Date dateEndAfter = calendar.getTime();
+
+            Date date = dateStartBefore;
+            while (!date.after(dateEndAfter)) {
+                mListDays.add(date);
+                calendar.setTime(date);
+                calendar.add(Calendar.DATE, 1);
+                date = calendar.getTime();
+            }
+
+            mCalendarAdapter = new HorizontalCalendarAdapter(calendarView, mListDays);
+            calendarView.setAdapter(mCalendarAdapter);
+            calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
+
+
+            handler.sendMessage(new Message());
+            calendarView.addOnScrollListener(onScrollListener);
+
+            // Callback when CalendarRecyclerView and Adapter load completely
+            ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                @Override
+                public void onGlobalLayout() {
+                    loading = false;
+                    show();
+                    if (defaultSelectedDate != null) {
+                        selectDate(defaultSelectedDate, true);
+                    }
+                    calendarView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            };
+
+            calendarView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+        } else {
+            new InitializeDatesList().execute();
+        }
     }
 
     public HorizontalCalendarListener getCalendarListener() {
