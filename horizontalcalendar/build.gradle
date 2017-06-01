@@ -11,10 +11,10 @@ ext {
 
     libraryDescription = 'A material horizontal calendar view for Android based on RecyclerView'
 
-    siteUrl = 'https://github.com/Mulham-Raee/HorizontalCalendarLibrary'
-    gitUrl = 'https://github.com/Mulham-Raee/HorizontalCalendarLibrary.git'
+    siteUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar'
+    gitUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar.git'
 
-    libraryVersion = '1.1.5'
+    libraryVersion = '1.1.7'
 
     developerId = 'mulham-raee'
     developerName = 'Mulham Raee'
@@ -101,7 +101,7 @@ bintray {
         version {
             desc = libraryDescription
             name = libraryVersion
-            vcsTag = 'v1.1.5'
+            vcsTag = 'v1.1.7'
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = properties.getProperty("bintray.gpg.password")

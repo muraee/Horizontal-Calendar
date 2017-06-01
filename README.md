@@ -16,7 +16,7 @@ repositories {
     }
     
     dependencies {
-      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.1.5'
+      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.1.7'
     }
 ```
 
