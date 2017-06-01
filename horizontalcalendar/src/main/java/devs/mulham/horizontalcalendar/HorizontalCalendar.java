@@ -165,8 +165,9 @@ public class HorizontalCalendar {
             handler.immediate = immediate;
         } else {
             if (immediate) {
-                centerToPositionWithNoAnimation(positionOfDate(date));
-                calendarListener.onDateSelected(date, positionOfDate(date));
+                int datePosition = positionOfDate(date);
+                centerToPositionWithNoAnimation(datePosition);
+                calendarListener.onDateSelected(date, datePosition);
             } else {
                 calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
                 centerCalendarToPosition(positionOfDate(date));
