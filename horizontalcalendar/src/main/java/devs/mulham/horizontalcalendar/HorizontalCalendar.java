@@ -2,6 +2,7 @@ package devs.mulham.horizontalcalendar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -83,7 +84,7 @@ public class HorizontalCalendar {
     private final String formatDayNumber;
     private final String formatMonth;
     private int textColorNormal, textColorSelected;
-    private int selectedDateBackground;
+    private Drawable selectedDateBackground;
     private int selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
@@ -294,11 +295,11 @@ public class HorizontalCalendar {
         return numberOfDatesOnScreen;
     }
 
-    public int getSelectedDateBackground() {
+    public Drawable getSelectedDateBackground() {
         return selectedDateBackground;
     }
 
-    public void setSelectedDateBackground(int selectedDateBackground) {
+    public void setSelectedDateBackground(Drawable selectedDateBackground) {
         this.selectedDateBackground = selectedDateBackground;
     }
 
@@ -390,7 +391,7 @@ public class HorizontalCalendar {
         String formatDayNumber;
         String formatMonth;
         int textColorNormal, textColorSelected;
-        int selectedDateBackground;
+        Drawable selectedDateBackground;
         int selectorColor;
         float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
@@ -457,8 +458,8 @@ public class HorizontalCalendar {
             return this;
         }
 
-        public Builder selectedDateBackground(int backgroundColor) {
-            this.selectedDateBackground = backgroundColor;
+        public Builder selectedDateBackground(Drawable background) {
+            this.selectedDateBackground = background;
             return this;
         }
 

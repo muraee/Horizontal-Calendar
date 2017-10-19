@@ -3,6 +3,7 @@ package devs.mulham.horizontalcalendar;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -41,8 +42,8 @@ public class HorizontalCalendarView extends RecyclerView {
         try {
             textColorNormal = a.getColor(R.styleable.HorizontalCalendarView_textColorNormal, Color.LTGRAY);
             textColorSelected = a.getColor(R.styleable.HorizontalCalendarView_textColorSelected, Color.BLACK);
-            selectedDateBackground = a.getColor(R.styleable.HorizontalCalendarView_selectedDateBackground, Color.TRANSPARENT);
-            selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, fetchAccentColor());
+            selectedDateBackground = a.getResourceId(R.styleable.HorizontalCalendarView_selectedDateBackgroundDrawable, R.drawable.default_selected_background);
+            selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, Color.TRANSPARENT);
 
             textSizeMonthName = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeMonthName,
                     DEFAULT_TEXT_SIZE_MONTH_NAME);
@@ -128,8 +129,9 @@ public class HorizontalCalendarView extends RecyclerView {
         if (horizontalCalendar.getSelectorColor() == 0) {
             horizontalCalendar.setSelectorColor(selectorColor);
         }
-        if (horizontalCalendar.getSelectedDateBackground() == 0) {
-            horizontalCalendar.setSelectedDateBackground(selectedDateBackground);
+        if (horizontalCalendar.getSelectedDateBackground() == null) {
+            final Drawable defaultDrawable = this.getContext().getResources().getDrawable(selectedDateBackground);
+            horizontalCalendar.setSelectedDateBackground(defaultDrawable);
         }
         if (horizontalCalendar.getTextSizeMonthName() == 0) {
             horizontalCalendar.setTextSizeMonthName(textSizeMonthName);
