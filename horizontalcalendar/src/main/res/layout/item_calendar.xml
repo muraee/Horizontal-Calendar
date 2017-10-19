@@ -6,6 +6,19 @@
     android:layout_height="wrap_content"
     android:gravity="center">
 
+    <View
+        android:id="@+id/selection_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/nav_view"
+        android:layout_alignEnd="@+id/date_layout"
+        android:layout_alignLeft="@+id/date_layout"
+        android:layout_alignRight="@+id/date_layout"
+        android:layout_alignStart="@+id/date_layout"
+        android:layout_alignTop="@+id/date_layout"
+        android:background="@drawable/default_selected_background"
+        android:visibility="visible" />
+
     <LinearLayout
         android:id="@+id/date_layout"
         android:layout_width="wrap_content"
@@ -46,17 +59,5 @@
         android:layout_height="1dp"
         android:layout_below="@+id/date_layout" />
 
-    <View
-        android:id="@+id/selection_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/nav_view"
-        android:layout_alignEnd="@+id/date_layout"
-        android:layout_alignLeft="@+id/date_layout"
-        android:layout_alignRight="@+id/date_layout"
-        android:layout_alignStart="@+id/date_layout"
-        android:layout_alignTop="@+id/date_layout"
-        android:background="@drawable/default_selected_background"
-        android:visibility="visible" />
 
 </RelativeLayout>
