@@ -3,6 +3,7 @@ package devs.mulham.horizontalcalendar;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -16,7 +17,7 @@ import android.util.TypedValue;
 public class HorizontalCalendarView extends RecyclerView {
 
     private int textColorNormal, textColorSelected;
-    private int selectedDateBackground;
+    private Drawable selectedDateBackground;
     private int selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
     private HorizontalCalendar horizontalCalendar;
@@ -41,7 +42,7 @@ public class HorizontalCalendarView extends RecyclerView {
         try {
             textColorNormal = a.getColor(R.styleable.HorizontalCalendarView_textColorNormal, Color.LTGRAY);
             textColorSelected = a.getColor(R.styleable.HorizontalCalendarView_textColorSelected, Color.BLACK);
-            selectedDateBackground = a.getColor(R.styleable.HorizontalCalendarView_selectedDateBackground, Color.TRANSPARENT);
+            selectedDateBackground = a.getDrawable(R.styleable.HorizontalCalendarView_selectedDateBackground);
             selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, fetchAccentColor());
 
             textSizeMonthName = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeMonthName,
@@ -125,10 +126,10 @@ public class HorizontalCalendarView extends RecyclerView {
         if (horizontalCalendar.getTextColorSelected() == 0) {
             horizontalCalendar.setTextColorSelected(textColorSelected);
         }
-        if (horizontalCalendar.getSelectorColor() == 0) {
+        if (horizontalCalendar.getSelectorColor() == null) { //compare with null because Color.TRANSPARENT == 0
             horizontalCalendar.setSelectorColor(selectorColor);
         }
-        if (horizontalCalendar.getSelectedDateBackground() == 0) {
+        if (horizontalCalendar.getSelectedDateBackground() == null) {
             horizontalCalendar.setSelectedDateBackground(selectedDateBackground);
         }
         if (horizontalCalendar.getTextSizeMonthName() == 0) {

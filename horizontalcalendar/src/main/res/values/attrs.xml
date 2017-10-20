@@ -7,8 +7,8 @@
         <attr name="textColorSelected" format="color" />
         <!-- Background color for selector bar. -->
         <attr name="selectorColor" format="color" />
-        <!-- Background color for selected date item. -->
-        <attr name="selectedDateBackground" format="color" />
+        <!-- Background drawable for selected date item. -->
+        <attr name="selectedDateBackground" format="reference" />
         <!-- Text size for month name. -->
         <attr name="textSizeMonthName" format="dimension" />
         <!-- Text size for day number. -->
