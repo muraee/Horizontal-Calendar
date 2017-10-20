@@ -1,7 +1,6 @@
 package devs.mulham.horizontalcalendar;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +48,10 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         convertView.setMinimumWidth(widthCell);
 
         final DayViewHolder holder = new DayViewHolder(convertView);
-        holder.selectionView.setBackgroundColor(horizontalCalendar.getSelectorColor());
+        final Integer selectorColor = horizontalCalendar.getSelectorColor();
+        if (selectorColor != null) {
+            holder.selectionView.setBackgroundColor(selectorColor);
+        }
 
         holder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +94,11 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorSelected());
             holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorSelected());
             holder.txtDayName.setTextColor(horizontalCalendar.getTextColorSelected());
-            holder.layoutBackground.setBackgroundColor(horizontalCalendar.getSelectedDateBackground());
+            if (Build.VERSION.SDK_INT >= 16) {
+                holder.layoutBackground.setBackground(horizontalCalendar.getSelectedDateBackground());
+            } else {
+                holder.layoutBackground.setBackgroundDrawable(horizontalCalendar.getSelectedDateBackground());
+            }
             holder.selectionView.setVisibility(View.VISIBLE);
         }
         // Unselected Days
@@ -100,7 +106,11 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorNormal());
             holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorNormal());
             holder.txtDayName.setTextColor(horizontalCalendar.getTextColorNormal());
-            holder.layoutBackground.setBackgroundColor(Color.TRANSPARENT);
+            if (Build.VERSION.SDK_INT >= 16) {
+                holder.layoutBackground.setBackground(null);
+            } else {
+                holder.layoutBackground.setBackgroundDrawable(null);
+            }
             holder.selectionView.setVisibility(View.INVISIBLE);
         }
 

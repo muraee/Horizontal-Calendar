@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
                 .showMonthName(true)
                 .defaultSelectedDate(defaultDate.getTime())
                 .textColor(Color.LTGRAY, Color.WHITE)
-                .selectedDateBackground(Color.TRANSPARENT)
                 .build();
 
         horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {

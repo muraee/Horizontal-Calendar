@@ -45,7 +45,6 @@ public class SampleFragment extends Fragment {
                 .showDayName(true)
                 .showMonthName(true)
                 .textColor(Color.LTGRAY, Color.WHITE)
-                .selectedDateBackground(Color.TRANSPARENT)
                 .build();
 
         horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
