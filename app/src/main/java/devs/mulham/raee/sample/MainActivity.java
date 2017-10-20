@@ -3,6 +3,7 @@ package devs.mulham.raee.sample;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 .monthFormat("MMM")
                 .showDayName(true)
                 .showMonthName(true)
+                .selectedDateBackground(ContextCompat.getDrawable(this, R.drawable.sample_selected_background))
                 .defaultSelectedDate(defaultDate.getTime())
                 .textColor(Color.LTGRAY, Color.WHITE)
                 .build();

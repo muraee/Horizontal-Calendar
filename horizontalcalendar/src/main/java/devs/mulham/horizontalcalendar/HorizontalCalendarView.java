@@ -17,7 +17,7 @@ import android.util.TypedValue;
 public class HorizontalCalendarView extends RecyclerView {
 
     private int textColorNormal, textColorSelected;
-    private int selectedDateBackground;
+    private Drawable selectedDateBackground;
     private int selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
     private HorizontalCalendar horizontalCalendar;
@@ -42,7 +42,7 @@ public class HorizontalCalendarView extends RecyclerView {
         try {
             textColorNormal = a.getColor(R.styleable.HorizontalCalendarView_textColorNormal, Color.LTGRAY);
             textColorSelected = a.getColor(R.styleable.HorizontalCalendarView_textColorSelected, Color.BLACK);
-            selectedDateBackground = a.getResourceId(R.styleable.HorizontalCalendarView_selectedDateBackgroundDrawable, R.drawable.default_selected_background);
+            selectedDateBackground = a.getDrawable(R.styleable.HorizontalCalendarView_selectedDateBackground);
             selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, fetchAccentColor());
 
             textSizeMonthName = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeMonthName,
@@ -130,8 +130,7 @@ public class HorizontalCalendarView extends RecyclerView {
             horizontalCalendar.setSelectorColor(selectorColor);
         }
         if (horizontalCalendar.getSelectedDateBackground() == null) {
-            final Drawable defaultDrawable = this.getContext().getResources().getDrawable(selectedDateBackground);
-            horizontalCalendar.setSelectedDateBackground(defaultDrawable);
+            horizontalCalendar.setSelectedDateBackground(selectedDateBackground);
         }
         if (horizontalCalendar.getTextSizeMonthName() == 0) {
             horizontalCalendar.setTextSizeMonthName(textSizeMonthName);
