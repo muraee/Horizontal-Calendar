@@ -43,7 +43,7 @@ public class HorizontalCalendarView extends RecyclerView {
             textColorNormal = a.getColor(R.styleable.HorizontalCalendarView_textColorNormal, Color.LTGRAY);
             textColorSelected = a.getColor(R.styleable.HorizontalCalendarView_textColorSelected, Color.BLACK);
             selectedDateBackground = a.getResourceId(R.styleable.HorizontalCalendarView_selectedDateBackgroundDrawable, R.drawable.default_selected_background);
-            selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, Color.TRANSPARENT);
+            selectorColor = a.getColor(R.styleable.HorizontalCalendarView_selectorColor, fetchAccentColor());
 
             textSizeMonthName = getRawSizeValue(a, R.styleable.HorizontalCalendarView_textSizeMonthName,
                     DEFAULT_TEXT_SIZE_MONTH_NAME);
@@ -126,7 +126,7 @@ public class HorizontalCalendarView extends RecyclerView {
         if (horizontalCalendar.getTextColorSelected() == 0) {
             horizontalCalendar.setTextColorSelected(textColorSelected);
         }
-        if (horizontalCalendar.getSelectorColor() == 0) {
+        if (horizontalCalendar.getSelectorColor() == null) { //compare with null because Color.TRANSPARENT == 0
             horizontalCalendar.setSelectorColor(selectorColor);
         }
         if (horizontalCalendar.getSelectedDateBackground() == null) {

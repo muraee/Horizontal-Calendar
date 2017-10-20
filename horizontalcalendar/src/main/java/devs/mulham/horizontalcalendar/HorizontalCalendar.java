@@ -85,7 +85,7 @@ public class HorizontalCalendar {
     private final String formatMonth;
     private int textColorNormal, textColorSelected;
     private Drawable selectedDateBackground;
-    private int selectorColor;
+    private Integer selectorColor;
     private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
     private final boolean showMonthName;
@@ -319,7 +319,7 @@ public class HorizontalCalendar {
         this.textColorSelected = textColorSelected;
     }
 
-    public int getSelectorColor() {
+    public Integer getSelectorColor() {
         return selectorColor;
     }
 
@@ -392,7 +392,7 @@ public class HorizontalCalendar {
         String formatMonth;
         int textColorNormal, textColorSelected;
         Drawable selectedDateBackground;
-        int selectorColor;
+        Integer selectorColor;
         float textSizeMonthName, textSizeDayNumber, textSizeDayName;
 
         boolean showMonthName = true;
