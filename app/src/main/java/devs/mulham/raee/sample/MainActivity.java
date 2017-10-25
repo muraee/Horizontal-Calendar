@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,13 +30,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /** end after 1 month from now */
+        /** end after 2 months from now */
         Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.MONTH, 1);
+        endDate.add(Calendar.MONTH, 2);
 
-        /** start before 1 month from now */
+        /** start 2 months ago from now */
         Calendar startDate = Calendar.getInstance();
-        startDate.add(Calendar.MONTH, -1);
+        startDate.add(Calendar.MONTH, -2);
 
         final Calendar defaultDate = Calendar.getInstance();
         defaultDate.add(Calendar.MONTH, -1);

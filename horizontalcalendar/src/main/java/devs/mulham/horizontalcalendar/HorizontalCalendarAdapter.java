@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 
 /**
  * custom adapter for {@link HorizontalCalendarView HorizontalCalendarView}
@@ -81,6 +83,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
                 return false;
             }
         });
+
         return holder;
     }
 
@@ -136,12 +139,53 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
     }
 
     @Override
+    public void onBindViewHolder(DayViewHolder holder, int position, List<Object> payloads) {
+        if ((payloads == null) || payloads.isEmpty()){
+            onBindViewHolder(holder, position);
+            return;
+        }
+
+        int selectedItemPosition = horizontalCalendar.getSelectedDatePosition();
+
+        // Selected Day
+        if (position == selectedItemPosition) {
+            holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorSelected());
+            holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorSelected());
+            holder.txtDayName.setTextColor(horizontalCalendar.getTextColorSelected());
+            if (Build.VERSION.SDK_INT >= 16) {
+                holder.layoutBackground.setBackground(horizontalCalendar.getSelectedDateBackground());
+            } else {
+                holder.layoutBackground.setBackgroundDrawable(horizontalCalendar.getSelectedDateBackground());
+            }
+            holder.selectionView.setVisibility(View.VISIBLE);
+        }
+        // Unselected Days
+        else {
+            holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorNormal());
+            holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorNormal());
+            holder.txtDayName.setTextColor(horizontalCalendar.getTextColorNormal());
+            if (Build.VERSION.SDK_INT >= 16) {
+                holder.layoutBackground.setBackground(null);
+            } else {
+                holder.layoutBackground.setBackgroundDrawable(null);
+            }
+            holder.selectionView.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
+    @Override
     public int getItemCount() {
         return datesList.size();
     }
 
     public Date getItem(int position) {
         return datesList.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     /**

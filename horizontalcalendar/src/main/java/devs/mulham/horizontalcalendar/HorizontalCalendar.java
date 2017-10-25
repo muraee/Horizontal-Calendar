@@ -26,52 +26,23 @@ import java.util.Locale;
  * @version 1.1
  * @see HorizontalCalendarListener
  */
-public class HorizontalCalendar {
+public final class HorizontalCalendar {
 
     //region private Fields
-    private HorizontalCalendarView calendarView;
-    private HorizontalCalendarAdapter mCalendarAdapter;
-    private ArrayList<Date> mListDays;
-    private boolean loading;
-    private DateHandler handler;
+    HorizontalCalendarView calendarView;
+    HorizontalCalendarAdapter mCalendarAdapter;
+    ArrayList<Date> mListDays;
+    boolean loading;
+    private final DateHandler handler;
 
     //Start & End Dates
     private Date dateStartCalendar;
     private Date dateEndCalendar;
 
     //Interface events
-    private HorizontalCalendarListener calendarListener;
-    private final RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                //On scroll end, the dateSelect event is call
-                //and agenda is center to the good item
-                int position = calendarView.getPositionOfCenterItem();
+    HorizontalCalendarListener calendarListener;
 
-                if (calendarListener != null) {
-                    calendarListener.onDateSelected(mListDays.get(position), position);
-                }
-
-            }
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            //On Scroll, agenda is refresh to update background colors
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    mCalendarAdapter.notifyDataSetChanged();
-                }
-            });
-
-            if (calendarListener != null) {
-                calendarListener.onCalendarScroll(calendarView, dx, dy);
-            }
-
-        }
-    };
+    final RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
 
     //RootView
     private final View rootView;
@@ -95,7 +66,7 @@ public class HorizontalCalendar {
     /**
      * Private Constructor to insure HorizontalCalendar can't be initiated the default way
      */
-    private HorizontalCalendar(Builder builder) {
+    HorizontalCalendar(Builder builder) {
         this.rootView = builder.rootView;
         this.calendarId = builder.viewId;
         this.textColorNormal = builder.textColorNormal;
@@ -118,7 +89,7 @@ public class HorizontalCalendar {
     }
 
     /* Init Calendar View */
-    private void loadHorizontalCalendar() {
+    void loadHorizontalCalendar() {
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
@@ -183,7 +154,7 @@ public class HorizontalCalendar {
      *
      * @param position The position to center the calendar to!
      */
-    protected void centerCalendarToPosition(int position) {
+    void centerCalendarToPosition(int position) {
         if (position != -1) {
             int shiftCells = numberOfDatesOnScreen / 2;
             int centerItem = calendarView.getPositionOfCenterItem();
@@ -196,7 +167,7 @@ public class HorizontalCalendar {
         }
     }
 
-    protected void centerToPositionWithNoAnimation(final int position) {
+    private void centerToPositionWithNoAnimation(final int position) {
         if (position != -1) {
             int shiftCells = numberOfDatesOnScreen / 2;
             int centerItem = calendarView.getPositionOfCenterItem();
@@ -478,7 +449,7 @@ public class HorizontalCalendar {
          * @param textSizeDayName   the day name text size, in SP
          */
         public Builder textSize(float textSizeMonthName, float textSizeDayNumber,
-                                float textSizeDayName) {
+                float textSizeDayName) {
             this.textSizeMonthName = textSizeMonthName;
             this.textSizeDayNumber = textSizeDayNumber;
             this.textSizeDayName = textSizeDayName;
@@ -560,13 +531,16 @@ public class HorizontalCalendar {
                 c2.add(Calendar.MONTH, 1);
                 dateEndCalendar = c2.getTime();
             }
-            if (defaultSelectedDate == null){
+            if (defaultSelectedDate == null) {
                 defaultSelectedDate = new Date();
             }
         }
     }
 
     private class InitializeDatesList extends AsyncTask<Void, Void, Void> {
+
+        InitializeDatesList() {
+        }
 
         @Override
         protected void onPreExecute() {
@@ -603,6 +577,7 @@ public class HorizontalCalendar {
             super.onPostExecute(aVoid);
 
             mCalendarAdapter = new HorizontalCalendarAdapter(calendarView, mListDays);
+            mCalendarAdapter.setHasStableIds(true);
             calendarView.setAdapter(mCalendarAdapter);
             calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
 
@@ -632,6 +607,58 @@ public class HorizontalCalendar {
                     calendar.selectDate(date, immediate);
                 }
 
+            }
+        }
+    }
+
+    private class HorizontalCalendarScrollListener extends RecyclerView.OnScrollListener {
+
+        int lastSelectedItem = -1;
+        final Runnable selectedItemRefresher = new SelectedItemRefresher();
+
+        HorizontalCalendarScrollListener() {}
+
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                //On scroll end, the dateSelect event is call
+                //and agenda is center to the good item
+                int position = calendarView.getPositionOfCenterItem();
+
+                if (calendarListener != null) {
+                    calendarListener.onDateSelected(mListDays.get(position), position);
+                }
+
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            //On Scroll, agenda is refresh to update background colors
+            post(selectedItemRefresher);
+
+            if (calendarListener != null) {
+                calendarListener.onCalendarScroll(calendarView, dx, dy);
+            }
+
+        }
+
+        private class SelectedItemRefresher implements Runnable {
+
+            SelectedItemRefresher() {}
+
+            @Override
+            public void run() {
+                final int positionOfCenterItem = calendarView.getPositionOfCenterItem();
+                if ((lastSelectedItem == -1) || (lastSelectedItem != positionOfCenterItem)) {
+                    //On Scroll, agenda is refresh to update background colors
+                    //mCalendarAdapter.notifyItemRangeChanged(getSelectedDatePosition() - 2, 5, "UPDATE_SELECTOR");
+                    mCalendarAdapter.notifyItemChanged(positionOfCenterItem, "UPDATE_SELECTOR");
+                    if (lastSelectedItem != -1){
+                        mCalendarAdapter.notifyItemChanged(lastSelectedItem, "UPDATE_SELECTOR");
+                    }
+                    lastSelectedItem = positionOfCenterItem;
+                }
             }
         }
     }
