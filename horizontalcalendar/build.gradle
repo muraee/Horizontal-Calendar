@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar'
     gitUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar.git'
 
-    libraryVersion = '1.1.8'
+    libraryVersion = '1.2.0'
 
     developerId = 'mulham-raee'
     developerName = 'Mulham Raee'
@@ -101,7 +101,7 @@ bintray {
         version {
             desc = libraryDescription
             name = libraryVersion
-            vcsTag = 'v1.1.8'
+            vcsTag = 'v1.2.0'
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = properties.getProperty("bintray.gpg.password")
