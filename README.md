@@ -20,7 +20,7 @@ repositories {
     }
 ```
 
-##Prerequisites
+## Prerequisites
 The minimum API level supported by this library is **API 9 (GINGERBREAD)**.
 
 ## Usage
