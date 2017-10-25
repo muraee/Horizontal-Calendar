@@ -150,10 +150,10 @@ public class HorizontalCalendarView extends RecyclerView {
      */
     public int getPositionOfCenterItem() {
         int numberOfDatesOnScreen = horizontalCalendar.getNumberOfDatesOnScreen();
-        int firstVisibilePosition = getLayoutManager().findFirstCompletelyVisibleItemPosition();
-        if (firstVisibilePosition == -1) {
+        int firstVisiblePosition = getLayoutManager().findFirstCompletelyVisibleItemPosition();
+        if (firstVisiblePosition == -1) {
             return -1;
         }
-        return firstVisibilePosition + (numberOfDatesOnScreen / 2);
+        return firstVisiblePosition + (numberOfDatesOnScreen / 2);
     }
 }

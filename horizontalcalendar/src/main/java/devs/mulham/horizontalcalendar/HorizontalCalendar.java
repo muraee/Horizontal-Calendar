@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -99,8 +98,8 @@ public final class HorizontalCalendar {
         calendarView.setHorizontalScrollBarEnabled(false);
         calendarView.setHorizontalCalendar(this);
 
-        LinearSnapHelper snapHelper = new LinearSnapHelper();
-        snapHelper.attachToRecyclerView(calendarView);
+        HorizontalSnapHelper snapHelper = new HorizontalSnapHelper();
+        snapHelper.attachToHorizontalCalendaar(this);
 
         hide();
         new InitializeDatesList().execute();
@@ -118,7 +117,7 @@ public final class HorizontalCalendar {
      * Select today date and center the Horizontal Calendar to this date
      *
      * @param immediate pass true to make the calendar scroll as fast as possible to reach the date of today
-     * ,or false to play default scroll animation speed.
+     *                  ,or false to play default scroll animation speed.
      */
     public void goToday(boolean immediate) {
         selectDate(new Date(), immediate);
@@ -127,9 +126,9 @@ public final class HorizontalCalendar {
     /**
      * Select the date and center the Horizontal Calendar to this date
      *
-     * @param date The date to select
+     * @param date      The date to select
      * @param immediate pass true to make the calendar scroll as fast as possible to reach the target date
-     * ,or false to play default scroll animation speed.
+     *                  ,or false to play default scroll animation speed.
      */
     public void selectDate(Date date, boolean immediate) {
         if (loading) {
@@ -329,13 +328,19 @@ public final class HorizontalCalendar {
      * @return position of date in Calendar, or -1 if date does not exist
      */
     public int positionOfDate(Date date) {
-        int position = -1;
-        for (int i = 0; i < mListDays.size(); i++) {
-            if (isDatesDaysEquals(date, mListDays.get(i))) {
-                position = i;
-                break;
-            }
+        if (date.after(dateEndCalendar) || date.before(dateStartCalendar)) {
+            return -1;
+        } else if (isDatesDaysEquals(date, dateStartCalendar)) {
+            return 0;
+        } else if (isDatesDaysEquals(date, dateEndCalendar)) {
+            return mListDays.size() - 1;
         }
+
+        long diff = date.getTime() - dateStartCalendar.getTime(); //result in millis
+        long days = (diff / (24 * 60 * 60 * 1000));
+
+        int position = (int) days + 2;
+
         return position;
     }
 
@@ -374,7 +379,7 @@ public final class HorizontalCalendar {
 
         /**
          * @param rootView pass the rootView for the Fragment where HorizontalCalendar is attached
-         * @param viewId the id specified for HorizontalCalendarView in your layout
+         * @param viewId   the id specified for HorizontalCalendarView in your layout
          */
         public Builder(View rootView, int viewId) {
             this.rootView = rootView;
@@ -383,7 +388,7 @@ public final class HorizontalCalendar {
 
         /**
          * @param activity pass the activity where HorizontalCalendar is attached
-         * @param viewId the id specified for HorizontalCalendarView in your layout
+         * @param viewId   the id specified for HorizontalCalendarView in your layout
          */
         public Builder(Activity activity, int viewId) {
             this.rootView = activity.getWindow().getDecorView();
@@ -449,7 +454,7 @@ public final class HorizontalCalendar {
          * @param textSizeDayName   the day name text size, in SP
          */
         public Builder textSize(float textSizeMonthName, float textSizeDayNumber,
-                float textSizeDayName) {
+                                float textSizeDayName) {
             this.textSizeMonthName = textSizeMonthName;
             this.textSizeDayNumber = textSizeDayNumber;
             this.textSizeDayName = textSizeDayName;
@@ -616,20 +621,7 @@ public final class HorizontalCalendar {
         int lastSelectedItem = -1;
         final Runnable selectedItemRefresher = new SelectedItemRefresher();
 
-        HorizontalCalendarScrollListener() {}
-
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                //On scroll end, the dateSelect event is call
-                //and agenda is center to the good item
-                int position = calendarView.getPositionOfCenterItem();
-
-                if (calendarListener != null) {
-                    calendarListener.onDateSelected(mListDays.get(position), position);
-                }
-
-            }
+        HorizontalCalendarScrollListener() {
         }
 
         @Override
@@ -640,12 +632,12 @@ public final class HorizontalCalendar {
             if (calendarListener != null) {
                 calendarListener.onCalendarScroll(calendarView, dx, dy);
             }
-
         }
 
         private class SelectedItemRefresher implements Runnable {
 
-            SelectedItemRefresher() {}
+            SelectedItemRefresher() {
+            }
 
             @Override
             public void run() {
@@ -654,7 +646,7 @@ public final class HorizontalCalendar {
                     //On Scroll, agenda is refresh to update background colors
                     //mCalendarAdapter.notifyItemRangeChanged(getSelectedDatePosition() - 2, 5, "UPDATE_SELECTOR");
                     mCalendarAdapter.notifyItemChanged(positionOfCenterItem, "UPDATE_SELECTOR");
-                    if (lastSelectedItem != -1){
+                    if (lastSelectedItem != -1) {
                         mCalendarAdapter.notifyItemChanged(lastSelectedItem, "UPDATE_SELECTOR");
                     }
                     lastSelectedItem = positionOfCenterItem;

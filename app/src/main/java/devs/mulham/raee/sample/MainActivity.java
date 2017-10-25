@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDateSelected(Date date, int position) {
                 Toast.makeText(MainActivity.this, DateFormat.getDateInstance().format(date) + " is selected!", Toast.LENGTH_SHORT).show();
+                Log.d("Selected Item: ", DateFormat.getDateInstance().format(date));
             }
 
         });
