@@ -27,20 +27,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /** end after 2 months from now */
+        /* end after 2 months from now */
         Calendar endDate = Calendar.getInstance();
         endDate.add(Calendar.MONTH, 2);
 
-        /** start 2 months ago from now */
+        /* start 2 months ago from now */
         Calendar startDate = Calendar.getInstance();
         startDate.add(Calendar.MONTH, -2);
 
-        final Calendar defaultDate = Calendar.getInstance();
-        defaultDate.add(Calendar.MONTH, -1);
-        defaultDate.add(Calendar.DAY_OF_WEEK, +5);
+        final Calendar defaultDateCalendar = Calendar.getInstance();
+        defaultDateCalendar.add(Calendar.MONTH, -1);
+        defaultDateCalendar.add(Calendar.DAY_OF_WEEK, +5);
+
+        final Date defaultDate = defaultDateCalendar.getTime();
 
         horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
                 .startDate(startDate.getTime())
@@ -51,21 +53,22 @@ public class MainActivity extends AppCompatActivity {
                 .monthFormat("MMM")
                 .showDayName(true)
                 .showMonthName(true)
-                .selectedDateBackground(ContextCompat.getDrawable(this, R.drawable.sample_selected_background))
-                .defaultSelectedDate(defaultDate.getTime())
+                .defaultSelectedDate(defaultDate)
                 .textColor(Color.LTGRAY, Color.WHITE)
                 .build();
+
+        Log.i("Default Date", DateFormat.getDateInstance().format(defaultDate));
 
         horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             @Override
             public void onDateSelected(Date date, int position) {
                 Toast.makeText(MainActivity.this, DateFormat.getDateInstance().format(date) + " is selected!", Toast.LENGTH_SHORT).show();
-                Log.d("Selected Item: ", DateFormat.getDateInstance().format(date));
+                Log.i("onDateSelected", DateFormat.getDateInstance().format(date) + " - Position = " + position);
             }
 
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

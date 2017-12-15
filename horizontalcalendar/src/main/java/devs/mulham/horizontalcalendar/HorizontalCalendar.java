@@ -22,8 +22,8 @@ import java.util.Locale;
  * See {@link HorizontalCalendarView HorizontalCalendarView}
  *
  * @author Mulham-Raee
- * @version 1.1
  * @see HorizontalCalendarListener
+ * @since v1.0.0
  */
 public final class HorizontalCalendar {
 
@@ -93,7 +93,7 @@ public final class HorizontalCalendar {
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
         mListDays = new ArrayList<>();
-        calendarView = (HorizontalCalendarView) rootView.findViewById(calendarId);
+        calendarView = rootView.findViewById(calendarId);
         calendarView.setHasFixedSize(true);
         calendarView.setHorizontalScrollBarEnabled(false);
         calendarView.setHorizontalCalendar(this);
@@ -135,15 +135,15 @@ public final class HorizontalCalendar {
             handler.date = date;
             handler.immediate = immediate;
         } else {
+            int datePosition = positionOfDate(date);
             if (immediate) {
-                int datePosition = positionOfDate(date);
                 centerToPositionWithNoAnimation(datePosition);
                 if (calendarListener != null) {
                     calendarListener.onDateSelected(date, datePosition);
                 }
             } else {
                 calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
-                centerCalendarToPosition(positionOfDate(date));
+                centerCalendarToPosition(datePosition);
             }
         }
     }
@@ -155,8 +155,8 @@ public final class HorizontalCalendar {
      */
     void centerCalendarToPosition(int position) {
         if (position != -1) {
-            int shiftCells = numberOfDatesOnScreen / 2;
-            int centerItem = calendarView.getPositionOfCenterItem();
+            final int centerItem = calendarView.getPositionOfCenterItem();
+            final int shiftCells = getShiftCells();
 
             if (position > centerItem) {
                 calendarView.smoothScrollToPosition(position + shiftCells);
@@ -168,8 +168,8 @@ public final class HorizontalCalendar {
 
     private void centerToPositionWithNoAnimation(final int position) {
         if (position != -1) {
-            int shiftCells = numberOfDatesOnScreen / 2;
-            int centerItem = calendarView.getPositionOfCenterItem();
+            final int centerItem = calendarView.getPositionOfCenterItem();
+            final int shiftCells = getShiftCells();
 
             if (position > centerItem) {
                 calendarView.scrollToPosition(position + shiftCells);
@@ -180,9 +180,28 @@ public final class HorizontalCalendar {
             calendarView.post(new Runnable() {
                 @Override
                 public void run() {
-                    mCalendarAdapter.notifyDataSetChanged();
+                    final int newSelectedItem = calendarView.getPositionOfCenterItem();
+                    //refresh to update background colors
+                    refreshItemsSelector(newSelectedItem, centerItem);
                 }
             });
+        }
+    }
+
+    private int getShiftCells() {
+        return numberOfDatesOnScreen / 2;
+    }
+
+    void refreshItemSelector(int position){
+        mCalendarAdapter.notifyItemChanged(position, "UPDATE_SELECTOR");
+    }
+
+    void refreshItemsSelector(int position1, int... positions){
+        refreshItemSelector(position1);
+        if ((positions != null) && (positions.length > 0)){
+            for (int pos : positions){
+                refreshItemSelector(pos);
+            }
         }
     }
 
@@ -330,18 +349,20 @@ public final class HorizontalCalendar {
     public int positionOfDate(Date date) {
         if (date.after(dateEndCalendar) || date.before(dateStartCalendar)) {
             return -1;
-        } else if (isDatesDaysEquals(date, dateStartCalendar)) {
-            return 0;
-        } else if (isDatesDaysEquals(date, dateEndCalendar)) {
-            return mListDays.size() - 1;
         }
 
-        long diff = date.getTime() - dateStartCalendar.getTime(); //result in millis
-        long days = (diff / (24 * 60 * 60 * 1000));
+        int position ;
+        if (isDatesDaysEquals(date, dateStartCalendar)) {
+            position = 0;
+        } else {
+            long diff = date.getTime() - dateStartCalendar.getTime(); //result in millis
+            long days = (diff / (24 * 60 * 60 * 1000));
 
-        int position = (int) days + 2;
+            position = (int) days;
+        }
 
-        return position;
+        final int shiftCells = getShiftCells();
+        return position + shiftCells;
     }
 
     /**
@@ -560,10 +581,10 @@ public final class HorizontalCalendar {
             GregorianCalendar calendar = new GregorianCalendar();
 
             calendar.setTime(dateStartCalendar);
-            calendar.add(Calendar.DATE, -(numberOfDatesOnScreen / 2));
+            calendar.add(Calendar.DATE, -getShiftCells());
             Date dateStartBefore = calendar.getTime();
             calendar.setTime(dateEndCalendar);
-            calendar.add(Calendar.DATE, numberOfDatesOnScreen / 2);
+            calendar.add(Calendar.DATE, getShiftCells());
             Date dateEndAfter = calendar.getTime();
 
             Date date = dateStartBefore;
@@ -645,9 +666,9 @@ public final class HorizontalCalendar {
                 if ((lastSelectedItem == -1) || (lastSelectedItem != positionOfCenterItem)) {
                     //On Scroll, agenda is refresh to update background colors
                     //mCalendarAdapter.notifyItemRangeChanged(getSelectedDatePosition() - 2, 5, "UPDATE_SELECTOR");
-                    mCalendarAdapter.notifyItemChanged(positionOfCenterItem, "UPDATE_SELECTOR");
+                    refreshItemSelector(positionOfCenterItem);
                     if (lastSelectedItem != -1) {
-                        mCalendarAdapter.notifyItemChanged(lastSelectedItem, "UPDATE_SELECTOR");
+                        refreshItemSelector(lastSelectedItem);
                     }
                     lastSelectedItem = positionOfCenterItem;
                 }

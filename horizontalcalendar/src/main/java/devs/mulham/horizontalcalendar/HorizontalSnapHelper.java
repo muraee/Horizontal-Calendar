@@ -6,7 +6,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * @author Raee, Mulham (mulham.raee@gmail.com)
+ * @author Mulham-Raee
+ * @since v1.2.0
  */
 public class HorizontalSnapHelper extends LinearSnapHelper {
 

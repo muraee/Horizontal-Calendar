@@ -16,12 +16,12 @@ repositories {
     }
     
     dependencies {
-      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.2.0'
+      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.2.2'
     }
 ```
 
 ## Prerequisites
-The minimum API level supported by this library is **API 9 (GINGERBREAD)**.
+The minimum API level supported by this library is **API 14 (ICE_CREAM_SANDWICH)**.
 
 ## Usage
 - Add `HorizontalCalendarView` to your layout file, for example:

@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar'
     gitUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar.git'
 
-    libraryVersion = '1.2.0'
+    libraryVersion = '1.2.2'
 
     developerId = 'mulham-raee'
     developerName = 'Mulham Raee'
@@ -28,16 +28,16 @@ ext {
 version = libraryVersion
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     lintOptions {
         abortOnError false
     }
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 25
+        minSdkVersion 14
+        targetSdkVersion 26
         versionCode 1
         versionName version
     }
@@ -51,8 +51,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:recyclerview-v7:26.1.0'
 }
 
 
@@ -101,7 +101,7 @@ bintray {
         version {
             desc = libraryDescription
             name = libraryVersion
-            vcsTag = 'v1.2.0'
+            vcsTag = 'v' + libraryVersion
             gpg {
                 sign = true //Determines whether to GPG sign the files. The default is false
                 passphrase = properties.getProperty("bintray.gpg.password")

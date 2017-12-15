@@ -22,24 +22,23 @@ import java.util.List;
  * custom adapter for {@link HorizontalCalendarView HorizontalCalendarView}
  *
  * @author Mulham-Raee
- * @version 1.1
+ * @since v1.0.0
+ * <p>
  * See {devs.mulham.horizontalcalendar.R.layout#item_calendar} Calendar CustomItem Layout
  */
 class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarAdapter.DayViewHolder> {
 
     private final Context context;
-    private ArrayList<Date> datesList;
-    private int widthCell;
-    private HorizontalCalendar horizontalCalendar;
-    private int numberOfDates;
-    private HorizontalCalendarView horizontalCalendarView;
+    ArrayList<Date> datesList;
+    private int cellWidth;
+    HorizontalCalendar horizontalCalendar;
+    HorizontalCalendarView horizontalCalendarView;
 
     HorizontalCalendarAdapter(HorizontalCalendarView horizontalCalendarView, ArrayList<Date> datesList) {
         this.horizontalCalendarView = horizontalCalendarView;
         this.context = horizontalCalendarView.getContext();
         this.datesList = datesList;
         this.horizontalCalendar = horizontalCalendarView.getHorizontalCalendar();
-        this.numberOfDates = horizontalCalendar.getNumberOfDatesOnScreen();
         calculateCellWidth();
     }
 
@@ -47,7 +46,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
     public DayViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
         View convertView = LayoutInflater.from(context).inflate(R.layout.item_calendar, viewGroup, false);
 
-        convertView.setMinimumWidth(widthCell);
+        convertView.setMinimumWidth(cellWidth);
 
         final DayViewHolder holder = new DayViewHolder(convertView);
         final Integer selectorColor = horizontalCalendar.getSelectorColor();
@@ -55,34 +54,8 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             holder.selectionView.setBackgroundColor(selectorColor);
         }
 
-        holder.rootView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(holder.getAdapterPosition() == -1)
-                    return;
-
-                Date date = datesList.get(holder.getAdapterPosition());
-
-                if (!date.before(horizontalCalendar.getDateStartCalendar())
-                        && !date.after(horizontalCalendar.getDateEndCalendar())) {
-                    horizontalCalendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
-                    horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
-                }
-            }
-        });
-
-        holder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Date date = datesList.get(holder.getAdapterPosition());
-                HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
-                if ((calendarListener != null) && !date.before(horizontalCalendar.getDateStartCalendar())
-                        && !date.after(horizontalCalendar.getDateEndCalendar())) {
-                    return calendarListener.onDateLongClicked(date, holder.getAdapterPosition());
-                }
-                return false;
-            }
-        });
+        holder.rootView.setOnClickListener(new MyOnClickListener(holder));
+        holder.rootView.setOnLongClickListener(new MyOnLongClickListener(holder));
 
         return holder;
     }
@@ -140,7 +113,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position, List<Object> payloads) {
-        if ((payloads == null) || payloads.isEmpty()){
+        if ((payloads == null) || payloads.isEmpty()) {
             onBindViewHolder(holder, position);
             return;
         }
@@ -195,17 +168,53 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
         Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
-        int widthScreen;
+        int screenWidth;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            display.getSize(size);
+        display.getSize(size);
+        screenWidth = size.x;
 
-            widthScreen = size.x;
-        } else {
-            widthScreen = display.getWidth();
+        cellWidth = screenWidth / horizontalCalendar.getNumberOfDatesOnScreen();
+    }
+
+    private class MyOnClickListener implements View.OnClickListener {
+        private final DayViewHolder holder;
+
+        MyOnClickListener(DayViewHolder holder) {
+            this.holder = holder;
         }
 
-        widthCell = widthScreen / numberOfDates;
+        @Override
+        public void onClick(View v) {
+            if (holder.getAdapterPosition() == -1)
+                return;
+
+            Date date = getItem(holder.getAdapterPosition());
+
+            if (!date.before(horizontalCalendar.getDateStartCalendar())
+                    && !date.after(horizontalCalendar.getDateEndCalendar())) {
+                horizontalCalendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
+                horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
+            }
+        }
+    }
+
+    private class MyOnLongClickListener implements View.OnLongClickListener {
+        private final DayViewHolder holder;
+
+        MyOnLongClickListener(DayViewHolder holder) {
+            this.holder = holder;
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Date date = getItem(holder.getAdapterPosition());
+            HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
+            if ((calendarListener != null) && !date.before(horizontalCalendar.getDateStartCalendar())
+                    && !date.after(horizontalCalendar.getDateEndCalendar())) {
+                return calendarListener.onDateLongClicked(date, holder.getAdapterPosition());
+            }
+            return false;
+        }
     }
 
     static class DayViewHolder extends RecyclerView.ViewHolder {
@@ -219,9 +228,9 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         public DayViewHolder(View rootView) {
             super(rootView);
             this.rootView = rootView;
-            txtDayNumber = (TextView) rootView.findViewById(R.id.dayNumber);
-            txtDayName = (TextView) rootView.findViewById(R.id.dayName);
-            txtMonthName = (TextView) rootView.findViewById(R.id.monthName);
+            txtDayNumber = rootView.findViewById(R.id.dayNumber);
+            txtDayName = rootView.findViewById(R.id.dayName);
+            txtMonthName = rootView.findViewById(R.id.monthName);
             layoutBackground = rootView.findViewById(R.id.layoutBackground);
             selectionView = rootView.findViewById(R.id.selection_view);
         }
