@@ -149,11 +149,17 @@ public class HorizontalCalendarView extends RecyclerView {
      * @return position of selected date on center of screen
      */
     public int getPositionOfCenterItem() {
-        int numberOfDatesOnScreen = horizontalCalendar.getNumberOfDatesOnScreen();
-        int firstVisiblePosition = getLayoutManager().findFirstCompletelyVisibleItemPosition();
-        if (firstVisiblePosition == -1) {
+        final HorizontalLayoutManager layoutManager = getLayoutManager();
+        if (layoutManager == null) {
             return -1;
+        } else {
+            final int firstVisiblePosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+            if (firstVisiblePosition == -1) {
+                return -1;
+            } else {
+                final int numberOfDatesOnScreen = horizontalCalendar.getNumberOfDatesOnScreen();
+                return firstVisiblePosition + (numberOfDatesOnScreen / 2);
+            }
         }
-        return firstVisiblePosition + (numberOfDatesOnScreen / 2);
     }
 }
