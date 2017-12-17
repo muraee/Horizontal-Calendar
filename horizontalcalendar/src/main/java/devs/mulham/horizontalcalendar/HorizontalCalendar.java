@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -356,7 +357,7 @@ public final class HorizontalCalendar {
             position = 0;
         } else {
             long diff = date.getTime() - dateStartCalendar.getTime(); //result in millis
-            long days = (diff / (24 * 60 * 60 * 1000));
+            long days = TimeUnit.MILLISECONDS.toDays(diff);
 
             position = (int) days;
         }
@@ -580,11 +581,13 @@ public final class HorizontalCalendar {
             //start and end date
             GregorianCalendar calendar = new GregorianCalendar();
 
+            final int shiftCells = getShiftCells();
+
             calendar.setTime(dateStartCalendar);
-            calendar.add(Calendar.DATE, -getShiftCells());
+            calendar.add(Calendar.DATE, -shiftCells);
             Date dateStartBefore = calendar.getTime();
             calendar.setTime(dateEndCalendar);
-            calendar.add(Calendar.DATE, getShiftCells());
+            calendar.add(Calendar.DATE, shiftCells);
             Date dateEndAfter = calendar.getTime();
 
             Date date = dateStartBefore;
