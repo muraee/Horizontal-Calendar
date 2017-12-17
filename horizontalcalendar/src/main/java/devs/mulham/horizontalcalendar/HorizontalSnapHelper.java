@@ -30,7 +30,8 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
                 selectedItemPosition = layoutManager.getPosition(snapView);
             }
 
-            horizontalCalendar.calendarListener.onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
+            horizontalCalendar.calendarListener
+                    .onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
         }
 
         return snapView;
@@ -41,7 +42,7 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
         // Do nothing
     }
 
-    public void attachToHorizontalCalendaar(@Nullable HorizontalCalendar horizontalCalendar) throws IllegalStateException {
+    void attachToHorizontalCalendar(@Nullable HorizontalCalendar horizontalCalendar) throws IllegalStateException {
         this.horizontalCalendar = horizontalCalendar;
         attachToRecyclerView();
     }

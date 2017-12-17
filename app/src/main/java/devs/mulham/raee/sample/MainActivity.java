@@ -3,7 +3,6 @@ package devs.mulham.raee.sample;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -38,10 +37,8 @@ public class MainActivity extends AppCompatActivity {
         Calendar startDate = Calendar.getInstance();
         startDate.add(Calendar.MONTH, -2);
 
+        // Default Date set to Today.
         final Calendar defaultDateCalendar = Calendar.getInstance();
-        defaultDateCalendar.add(Calendar.MONTH, -1);
-        defaultDateCalendar.add(Calendar.DAY_OF_WEEK, +5);
-
         final Date defaultDate = defaultDateCalendar.getTime();
 
         horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)

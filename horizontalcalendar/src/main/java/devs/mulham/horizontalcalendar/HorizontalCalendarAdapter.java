@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -29,16 +31,23 @@ import java.util.List;
 class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarAdapter.DayViewHolder> {
 
     private final Context context;
-    ArrayList<Date> datesList;
+    final Date dateStart;
+    final Date dateEnd;
     private int cellWidth;
-    HorizontalCalendar horizontalCalendar;
-    HorizontalCalendarView horizontalCalendarView;
+    private final int itemsCount;
 
-    HorizontalCalendarAdapter(HorizontalCalendarView horizontalCalendarView, ArrayList<Date> datesList) {
-        this.horizontalCalendarView = horizontalCalendarView;
+    final HorizontalCalendar horizontalCalendar;
+
+    HorizontalCalendarAdapter(HorizontalCalendarView horizontalCalendarView, Date dateStart, Date dateEnd) {
         this.context = horizontalCalendarView.getContext();
-        this.datesList = datesList;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
         this.horizontalCalendar = horizontalCalendarView.getHorizontalCalendar();
+
+
+        long diff = dateEnd.getTime() - dateStart.getTime(); //result in millis
+        itemsCount = (int) TimeUnit.MILLISECONDS.toDays(diff) + 1;
+
         calculateCellWidth();
     }
 
@@ -62,7 +71,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
-        Date day = datesList.get(position);
+        Date day = getItem(position);
         int selectedItemPosition = horizontalCalendar.getSelectedDatePosition();
 
         // Selected Day
@@ -149,29 +158,32 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
     @Override
     public int getItemCount() {
-        return datesList.size();
+        return itemsCount + (horizontalCalendar.getShiftCells() * 2);
     }
 
-    public Date getItem(int position) {
-        return datesList.get(position);
-    }
+    public Date getItem(int position) throws IndexOutOfBoundsException {
+        if (position >= getItemCount()) {
+            throw new IndexOutOfBoundsException();
+        }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
+        int daysDiff = position - horizontalCalendar.getShiftCells();
+
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(dateStart);
+        calendar.add(Calendar.DATE, daysDiff);
+
+        return calendar.getTime();
     }
 
     /**
      * calculate each item width depends on {@link HorizontalCalendar#numberOfDatesOnScreen}
      */
     private void calculateCellWidth() {
-
         Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
-        int screenWidth;
 
         display.getSize(size);
-        screenWidth = size.x;
+        int screenWidth = size.x;
 
         cellWidth = screenWidth / horizontalCalendar.getNumberOfDatesOnScreen();
     }
@@ -190,9 +202,8 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
             Date date = getItem(holder.getAdapterPosition());
 
-            if (!date.before(horizontalCalendar.getDateStartCalendar())
-                    && !date.after(horizontalCalendar.getDateEndCalendar())) {
-                horizontalCalendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
+            if (!date.before(dateStart) && !date.after(dateEnd)) {
+                horizontalCalendar.calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
                 horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
             }
         }
@@ -209,8 +220,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         public boolean onLongClick(View v) {
             Date date = getItem(holder.getAdapterPosition());
             HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
-            if ((calendarListener != null) && !date.before(horizontalCalendar.getDateStartCalendar())
-                    && !date.after(horizontalCalendar.getDateEndCalendar())) {
+            if ((calendarListener != null) && !date.before(dateStart) && !date.after(dateEnd)) {
                 return calendarListener.onDateLongClicked(date, holder.getAdapterPosition());
             }
             return false;

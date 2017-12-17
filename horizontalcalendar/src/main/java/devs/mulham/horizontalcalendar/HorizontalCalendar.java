@@ -3,18 +3,12 @@ package devs.mulham.horizontalcalendar;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -30,22 +24,17 @@ public final class HorizontalCalendar {
 
     //region private Fields
     HorizontalCalendarView calendarView;
-    HorizontalCalendarAdapter mCalendarAdapter;
-    ArrayList<Date> mListDays;
-    boolean loading;
-    private final DateHandler handler;
+    private HorizontalCalendarAdapter mCalendarAdapter;
 
     //Start & End Dates
-    private Date dateStartCalendar;
-    private Date dateEndCalendar;
+    private final Date dateStartCalendar;
+    private final Date dateEndCalendar;
 
     //Interface events
     HorizontalCalendarListener calendarListener;
 
-    final RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
+    final private RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
 
-    //RootView
-    private final View rootView;
     private final int calendarId;
     //Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
@@ -67,7 +56,6 @@ public final class HorizontalCalendar {
      * Private Constructor to insure HorizontalCalendar can't be initiated the default way
      */
     HorizontalCalendar(Builder builder) {
-        this.rootView = builder.rootView;
         this.calendarId = builder.viewId;
         this.textColorNormal = builder.textColorNormal;
         this.textColorSelected = builder.textColorSelected;
@@ -84,26 +72,33 @@ public final class HorizontalCalendar {
         this.dateEndCalendar = builder.dateEndCalendar;
         this.showDayName = builder.showDayName;
         this.showMonthName = builder.showMonthName;
-
-        handler = new DateHandler(this, builder.defaultSelectedDate);
     }
 
     /* Init Calendar View */
-    void loadHorizontalCalendar() {
+    void loadHorizontalCalendar(View rootView, final Date defaultSelectedDate) {
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
-        mListDays = new ArrayList<>();
         calendarView = rootView.findViewById(calendarId);
         calendarView.setHasFixedSize(true);
         calendarView.setHorizontalScrollBarEnabled(false);
         calendarView.setHorizontalCalendar(this);
 
         HorizontalSnapHelper snapHelper = new HorizontalSnapHelper();
-        snapHelper.attachToHorizontalCalendaar(this);
+        snapHelper.attachToHorizontalCalendar(this);
 
-        hide();
-        new InitializeDatesList().execute();
+        mCalendarAdapter = new HorizontalCalendarAdapter(calendarView, dateStartCalendar, dateEndCalendar);
+        calendarView.setAdapter(mCalendarAdapter);
+        calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
+        calendarView.addOnScrollListener(onScrollListener);
+
+        post(new Runnable() {
+            @Override
+            public void run() {
+                centerToPositionWithNoAnimation(positionOfDate(defaultSelectedDate));
+            }
+        });
+
     }
 
     public HorizontalCalendarListener getCalendarListener() {
@@ -132,75 +127,85 @@ public final class HorizontalCalendar {
      *                  ,or false to play default scroll animation speed.
      */
     public void selectDate(Date date, boolean immediate) {
-        if (loading) {
-            handler.date = date;
-            handler.immediate = immediate;
-        } else {
-            int datePosition = positionOfDate(date);
-            if (immediate) {
-                centerToPositionWithNoAnimation(datePosition);
-                if (calendarListener != null) {
-                    calendarListener.onDateSelected(date, datePosition);
-                }
-            } else {
-                calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
-                centerCalendarToPosition(datePosition);
+        int datePosition = positionOfDate(date);
+        if (immediate) {
+            centerToPositionWithNoAnimation(datePosition);
+            if (calendarListener != null) {
+                calendarListener.onDateSelected(date, datePosition);
             }
+        } else {
+            calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
+            centerCalendarToPosition(datePosition);
         }
     }
 
     /**
-     * Center the Horizontal Calendar to this position and select the day on this position
+     * Smooth scroll Horizontal Calendar to center this position and select the new centered day.
      *
      * @param position The position to center the calendar to!
      */
-    void centerCalendarToPosition(int position) {
+    void centerCalendarToPosition(final int position) {
         if (position != -1) {
-            final int centerItem = calendarView.getPositionOfCenterItem();
-            final int shiftCells = getShiftCells();
-
-            if (position > centerItem) {
-                calendarView.smoothScrollToPosition(position + shiftCells);
-            } else if (position < centerItem) {
-                calendarView.smoothScrollToPosition(position - shiftCells);
+            int relativeCenterPosition = calculateRelativeCenterPosition(position);
+            if (relativeCenterPosition == position){
+                return;
             }
+
+            calendarView.smoothScrollToPosition(relativeCenterPosition);
         }
     }
 
-    private void centerToPositionWithNoAnimation(final int position) {
+    /**
+     * Scroll Horizontal Calendar to center this position and select the new centered day.
+     *
+     * @param position The position to center the calendar to!
+     */
+    void centerToPositionWithNoAnimation(final int position) {
         if (position != -1) {
-            final int centerItem = calendarView.getPositionOfCenterItem();
-            final int shiftCells = getShiftCells();
-
-            if (position > centerItem) {
-                calendarView.scrollToPosition(position + shiftCells);
-            } else if (position < centerItem) {
-                calendarView.scrollToPosition(position - shiftCells);
+            int relativeCenterPosition = calculateRelativeCenterPosition(position);
+            if (relativeCenterPosition == position){
+                return;
             }
 
+            final int oldSelectedItem = calendarView.getPositionOfCenterItem();
+            calendarView.scrollToPosition(relativeCenterPosition);
             calendarView.post(new Runnable() {
                 @Override
                 public void run() {
                     final int newSelectedItem = calendarView.getPositionOfCenterItem();
                     //refresh to update background colors
-                    refreshItemsSelector(newSelectedItem, centerItem);
+                    refreshItemsSelector(newSelectedItem, oldSelectedItem);
                 }
             });
         }
     }
 
-    private int getShiftCells() {
+    private int calculateRelativeCenterPosition(final int position) {
+        final int centerItem = calendarView.getPositionOfCenterItem();
+        final int shiftCells = getShiftCells();
+        int relativeCenterPosition = position;
+
+        if (position > centerItem) {
+            relativeCenterPosition = position + shiftCells;
+        } else if (position < centerItem) {
+            relativeCenterPosition = position - shiftCells;
+        }
+
+        return relativeCenterPosition;
+    }
+
+    int getShiftCells() {
         return numberOfDatesOnScreen / 2;
     }
 
-    void refreshItemSelector(int position){
+    void refreshItemSelector(int position) {
         mCalendarAdapter.notifyItemChanged(position, "UPDATE_SELECTOR");
     }
 
-    void refreshItemsSelector(int position1, int... positions){
+    void refreshItemsSelector(int position1, int... positions) {
         refreshItemSelector(position1);
-        if ((positions != null) && (positions.length > 0)){
-            for (int pos : positions){
+        if ((positions != null) && (positions.length > 0)) {
+            for (int pos : positions) {
                 refreshItemSelector(pos);
             }
         }
@@ -227,7 +232,7 @@ public final class HorizontalCalendar {
      * @return the current selected date
      */
     public Date getSelectedDate() {
-        return mListDays.get(calendarView.getPositionOfCenterItem());
+        return mCalendarAdapter.getItem(calendarView.getPositionOfCenterItem());
     }
 
     /**
@@ -240,7 +245,7 @@ public final class HorizontalCalendar {
     /**
      * @param position The position of date
      * @return the date on this index
-     * @throws IndexOutOfBoundsException
+     * @throws IndexOutOfBoundsException if position is out of the calendar range
      */
     public Date getDateAt(int position) throws IndexOutOfBoundsException {
         return mCalendarAdapter.getItem(position);
@@ -251,7 +256,7 @@ public final class HorizontalCalendar {
      * @return true if the calendar contains this date or false otherwise
      */
     public boolean contains(Date date) {
-        return mListDays.contains(date);
+        return positionOfDate(date) != -1;
     }
 
     //region Getters & Setters
@@ -348,11 +353,11 @@ public final class HorizontalCalendar {
      * @return position of date in Calendar, or -1 if date does not exist
      */
     public int positionOfDate(Date date) {
-        if (date.after(dateEndCalendar) || date.before(dateStartCalendar)) {
+        if (date.before(dateStartCalendar) || date.after(dateEndCalendar)) {
             return -1;
         }
 
-        int position ;
+        int position;
         if (isDatesDaysEquals(date, dateStartCalendar)) {
             position = 0;
         } else {
@@ -367,10 +372,9 @@ public final class HorizontalCalendar {
     }
 
     /**
-     * @return true if dates are equal
+     * @return <code>true</code> if dates are equal; <code>false</code> otherwise
      */
     public boolean isDatesDaysEquals(Date date1, Date date2) {
-
         return dateFormat.format(date1).equals(dateFormat.format(date2));
     }
 
@@ -529,7 +533,7 @@ public final class HorizontalCalendar {
         public HorizontalCalendar build() {
             initDefaultValues();
             HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this);
-            horizontalCalendar.loadHorizontalCalendar();
+            horizontalCalendar.loadHorizontalCalendar(rootView, defaultSelectedDate);
             return horizontalCalendar;
         }
 
@@ -560,82 +564,6 @@ public final class HorizontalCalendar {
             }
             if (defaultSelectedDate == null) {
                 defaultSelectedDate = new Date();
-            }
-        }
-    }
-
-    private class InitializeDatesList extends AsyncTask<Void, Void, Void> {
-
-        InitializeDatesList() {
-        }
-
-        @Override
-        protected void onPreExecute() {
-            loading = true;
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //ArrayList of dates is set with all the dates between
-            //start and end date
-            GregorianCalendar calendar = new GregorianCalendar();
-
-            final int shiftCells = getShiftCells();
-
-            calendar.setTime(dateStartCalendar);
-            calendar.add(Calendar.DATE, -shiftCells);
-            Date dateStartBefore = calendar.getTime();
-            calendar.setTime(dateEndCalendar);
-            calendar.add(Calendar.DATE, shiftCells);
-            Date dateEndAfter = calendar.getTime();
-
-            Date date = dateStartBefore;
-            while (!date.after(dateEndAfter)) {
-                mListDays.add(date);
-                calendar.setTime(date);
-                calendar.add(Calendar.DATE, 1);
-                date = calendar.getTime();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            mCalendarAdapter = new HorizontalCalendarAdapter(calendarView, mListDays);
-            mCalendarAdapter.setHasStableIds(true);
-            calendarView.setAdapter(mCalendarAdapter);
-            calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
-
-            show();
-            handler.sendMessage(new Message());
-            calendarView.addOnScrollListener(onScrollListener);
-        }
-    }
-
-    private static class DateHandler extends Handler {
-
-        private final WeakReference<HorizontalCalendar> horizontalCalendar;
-        public Date date = null;
-        public boolean immediate = true;
-
-        public DateHandler(HorizontalCalendar horizontalCalendar, Date defaultDate) {
-            this.horizontalCalendar = new WeakReference<>(horizontalCalendar);
-            this.date = defaultDate;
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            HorizontalCalendar calendar = horizontalCalendar.get();
-            if (calendar != null) {
-                calendar.loading = false;
-                if (date != null) {
-                    calendar.selectDate(date, immediate);
-                }
-
             }
         }
     }

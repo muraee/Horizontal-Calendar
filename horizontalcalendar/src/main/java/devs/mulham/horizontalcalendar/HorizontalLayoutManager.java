@@ -19,7 +19,7 @@ class HorizontalLayoutManager extends LinearLayoutManager {
     static final float SPEED_NORMAL = 40f;
     static final float SPEED_SLOW = 125f;
 
-    private float smoothScrollSpeed = SPEED_NORMAL;
+    float smoothScrollSpeed = SPEED_NORMAL;
 
     HorizontalLayoutManager(Context context, boolean reverseLayout) {
         super(context, HORIZONTAL, reverseLayout);
@@ -31,7 +31,7 @@ class HorizontalLayoutManager extends LinearLayoutManager {
 
             @Override
             protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-                return getSmoothScrollSpeed() / displayMetrics.densityDpi;
+                return smoothScrollSpeed / displayMetrics.densityDpi;
             }
 
         };

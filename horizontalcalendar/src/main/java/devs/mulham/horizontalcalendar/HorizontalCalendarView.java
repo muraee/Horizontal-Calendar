@@ -157,8 +157,7 @@ public class HorizontalCalendarView extends RecyclerView {
             if (firstVisiblePosition == -1) {
                 return -1;
             } else {
-                final int numberOfDatesOnScreen = horizontalCalendar.getNumberOfDatesOnScreen();
-                return firstVisiblePosition + (numberOfDatesOnScreen / 2);
+                return firstVisiblePosition + horizontalCalendar.getShiftCells();
             }
         }
     }
