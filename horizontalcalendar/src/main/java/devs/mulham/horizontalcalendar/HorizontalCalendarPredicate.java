@@ -17,7 +17,7 @@ public interface HorizontalCalendarPredicate {
         private final HorizontalCalendarPredicate firstPredicate;
         private final HorizontalCalendarPredicate secondPredicate;
 
-        public Or(HorizontalCalendarPredicate firstPredicate, HorizontalCalendarPredicate secondPredicate) {
+        Or(HorizontalCalendarPredicate firstPredicate, HorizontalCalendarPredicate secondPredicate) {
             this.firstPredicate = firstPredicate;
             this.secondPredicate = secondPredicate;
         }

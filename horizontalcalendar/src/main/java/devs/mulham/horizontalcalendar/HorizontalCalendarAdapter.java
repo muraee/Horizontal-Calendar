@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @author Mulham-Raee
  * @since v1.0.0
  * <p>
- * See {devs.mulham.horizontalcalendar.R.layout#item_calendar} Calendar CustomItem Layout
+ * See {devs.mulham.horizontalcalendar.R.layout#hc_item_calendar} Calendar CustomItem Layout
  */
 class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarAdapter.DayViewHolder> {
 
@@ -53,7 +53,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
 
     @Override
     public DayViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
-        View convertView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_calendar, viewGroup, false);
+        View convertView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.hc_item_calendar, viewGroup, false);
 
         convertView.setMinimumWidth(cellWidth);
 
