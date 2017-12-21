@@ -2,12 +2,12 @@ package devs.mulham.horizontalcalendar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -30,52 +30,37 @@ public final class HorizontalCalendar {
     private final Date dateStartCalendar;
     private final Date dateEndCalendar;
 
+    //Number of Dates to Show on Screen
+    private final int numberOfDatesOnScreen;
+
     //Interface events
     HorizontalCalendarListener calendarListener;
 
     final private RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
 
     private final int calendarId;
-    //Number of Dates to Show on Screen
-    private final int numberOfDatesOnScreen;
     /* Format, Colors & Font Sizes*/
     private SimpleDateFormat dateFormat;
-    private final String formatDayName;
-    private final String formatDayNumber;
-    private final String formatMonth;
-    private int textColorNormal, textColorSelected;
-    private Drawable selectedDateBackground;
-    private Integer selectorColor;
-    private float textSizeMonthName, textSizeDayNumber, textSizeDayName;
-
-    private final boolean showMonthName;
-    private final boolean showDayName;
+    private final CalendarItemStyle defaultStyle;
+    private final CalendarItemStyle selectedItemStyle;
+    private final HorizontalCalendarConfig config;
     //endregion
 
     /**
      * Private Constructor to insure HorizontalCalendar can't be initiated the default way
      */
-    HorizontalCalendar(Builder builder) {
-        this.calendarId = builder.viewId;
-        this.textColorNormal = builder.textColorNormal;
-        this.textColorSelected = builder.textColorSelected;
-        this.selectedDateBackground = builder.selectedDateBackground;
-        this.selectorColor = builder.selectorColor;
-        this.formatDayName = builder.formatDayName;
-        this.formatDayNumber = builder.formatDayNumber;
-        this.formatMonth = builder.formatMonth;
-        this.textSizeMonthName = builder.textSizeMonthName;
-        this.textSizeDayNumber = builder.textSizeDayNumber;
-        this.textSizeDayName = builder.textSizeDayName;
+    HorizontalCalendar(Builder builder, HorizontalCalendarConfig config, CalendarItemStyle defaultStyle, CalendarItemStyle selectedItemStyle) {
         this.numberOfDatesOnScreen = builder.numberOfDatesOnScreen;
+        this.calendarId = builder.viewId;
         this.dateStartCalendar = builder.dateStartCalendar;
         this.dateEndCalendar = builder.dateEndCalendar;
-        this.showDayName = builder.showDayName;
-        this.showMonthName = builder.showMonthName;
+        this.config = config;
+        this.defaultStyle = defaultStyle;
+        this.selectedItemStyle = selectedItemStyle;
     }
 
     /* Init Calendar View */
-    void loadHorizontalCalendar(View rootView, final Date defaultSelectedDate) {
+    void loadHorizontalCalendar(View rootView, final Date defaultSelectedDate, final HorizontalCalendarPredicate disablePredicate) {
 
         dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
@@ -87,7 +72,7 @@ public final class HorizontalCalendar {
         HorizontalSnapHelper snapHelper = new HorizontalSnapHelper();
         snapHelper.attachToHorizontalCalendar(this);
 
-        mCalendarAdapter = new HorizontalCalendarAdapter(calendarView, dateStartCalendar, dateEndCalendar);
+        mCalendarAdapter = new HorizontalCalendarAdapter(this, dateStartCalendar, dateEndCalendar, disablePredicate);
         calendarView.setAdapter(mCalendarAdapter);
         calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
         calendarView.addOnScrollListener(onScrollListener);
@@ -147,7 +132,7 @@ public final class HorizontalCalendar {
     void centerCalendarToPosition(final int position) {
         if (position != -1) {
             int relativeCenterPosition = calculateRelativeCenterPosition(position);
-            if (relativeCenterPosition == position){
+            if (relativeCenterPosition == position) {
                 return;
             }
 
@@ -163,7 +148,7 @@ public final class HorizontalCalendar {
     void centerToPositionWithNoAnimation(final int position) {
         if (position != -1) {
             int relativeCenterPosition = calculateRelativeCenterPosition(position);
-            if (relativeCenterPosition == position){
+            if (relativeCenterPosition == position) {
                 return;
             }
 
@@ -209,6 +194,10 @@ public final class HorizontalCalendar {
                 refreshItemSelector(pos);
             }
         }
+    }
+
+    public boolean isItemDisabled(int position) {
+        return mCalendarAdapter.isDisabled(position);
     }
 
     public void show() {
@@ -259,95 +248,21 @@ public final class HorizontalCalendar {
         return positionOfDate(date) != -1;
     }
 
-    //region Getters & Setters
-    public Date getDateStartCalendar() {
-        return dateStartCalendar;
+    public CalendarItemStyle getDefaultStyle() {
+        return defaultStyle;
     }
 
-    public Date getDateEndCalendar() {
-        return dateEndCalendar;
+    public CalendarItemStyle getSelectedItemStyle() {
+        return selectedItemStyle;
     }
 
-    public String getFormatDayName() {
-        return formatDayName;
-    }
-
-    public String getFormatDayNumber() {
-        return formatDayNumber;
-    }
-
-    public String getFormatMonth() {
-        return formatMonth;
-    }
-
-    public boolean isShowDayName() {
-        return showDayName;
-    }
-
-    public boolean isShowMonthName() {
-        return showMonthName;
+    public HorizontalCalendarConfig getConfig() {
+        return config;
     }
 
     public int getNumberOfDatesOnScreen() {
         return numberOfDatesOnScreen;
     }
-
-    public Drawable getSelectedDateBackground() {
-        return selectedDateBackground;
-    }
-
-    public void setSelectedDateBackground(Drawable selectedDateBackground) {
-        this.selectedDateBackground = selectedDateBackground;
-    }
-
-    public int getTextColorNormal() {
-        return textColorNormal;
-    }
-
-    public void setTextColorNormal(int textColorNormal) {
-        this.textColorNormal = textColorNormal;
-    }
-
-    public int getTextColorSelected() {
-        return textColorSelected;
-    }
-
-    public void setTextColorSelected(int textColorSelected) {
-        this.textColorSelected = textColorSelected;
-    }
-
-    public Integer getSelectorColor() {
-        return selectorColor;
-    }
-
-    public void setSelectorColor(int selectorColor) {
-        this.selectorColor = selectorColor;
-    }
-
-    public float getTextSizeMonthName() {
-        return textSizeMonthName;
-    }
-
-    public void setTextSizeMonthName(float textSizeMonthName) {
-        this.textSizeMonthName = textSizeMonthName;
-    }
-
-    public float getTextSizeDayNumber() {
-        return textSizeDayNumber;
-    }
-
-    public void setTextSizeDayNumber(float textSizeDayNumber) {
-        this.textSizeDayNumber = textSizeDayNumber;
-    }
-
-    public float getTextSizeDayName() {
-        return textSizeDayName;
-    }
-
-    public void setTextSizeDayName(float textSizeDayName) {
-        this.textSizeDayName = textSizeDayName;
-    }
-    //endregion
 
     /**
      * @return position of date in Calendar, or -1 if date does not exist
@@ -383,25 +298,17 @@ public final class HorizontalCalendar {
         final int viewId;
         final View rootView;
 
-        //Start & End Dates
+        // Start & End Dates
         Date dateStartCalendar;
         Date dateEndCalendar;
-
-        //Number of Days to Show on Screen
-        int numberOfDatesOnScreen;
-
-        /* Format, Colors & Font Sizes*/
-        String formatDayName;
-        String formatDayNumber;
-        String formatMonth;
-        int textColorNormal, textColorSelected;
-        Drawable selectedDateBackground;
-        Integer selectorColor;
-        float textSizeMonthName, textSizeDayNumber, textSizeDayName;
-
-        boolean showMonthName = true;
-        boolean showDayName = true;
         Date defaultSelectedDate;
+
+        // Number of Days to Show on Screen
+        int numberOfDatesOnScreen;
+        // Specified which dates should be disabled
+        private HorizontalCalendarPredicate disablePredicate;
+
+        private ConfigBuilder configBuilder;
 
         /**
          * @param rootView pass the rootView for the Fragment where HorizontalCalendar is attached
@@ -421,11 +328,6 @@ public final class HorizontalCalendar {
             this.viewId = viewId;
         }
 
-        public Builder defaultSelectedDate(Date date) {
-            defaultSelectedDate = date;
-            return this;
-        }
-
         public Builder startDate(Date dateStartCalendar) {
             this.dateStartCalendar = dateStartCalendar;
             return this;
@@ -441,130 +343,81 @@ public final class HorizontalCalendar {
             return this;
         }
 
-        public Builder dayNameFormat(String format) {
-            this.formatDayName = format;
+        public Builder defaultSelectedDate(Date date) {
+            defaultSelectedDate = date;
             return this;
         }
 
-        public Builder dayNumberFormat(String format) {
-            this.formatDayNumber = format;
+        public Builder disableDates(HorizontalCalendarPredicate predicate) {
+            disablePredicate = predicate;
             return this;
         }
 
-        public Builder monthFormat(String format) {
-            this.formatMonth = format;
-            return this;
+        public ConfigBuilder configure(){
+            if (configBuilder == null){
+                configBuilder = new ConfigBuilder(this);
+            }
+
+            return configBuilder;
         }
 
-        public Builder textColor(int textColorNormal, int textColorSelected) {
-            this.textColorNormal = textColorNormal;
-            this.textColorSelected = textColorSelected;
-            return this;
-        }
-
-        public Builder selectedDateBackground(Drawable background) {
-            this.selectedDateBackground = background;
-            return this;
-        }
-
-        public Builder selectorColor(int selectorColor) {
-            this.selectorColor = selectorColor;
-            return this;
-        }
-
-        /**
-         * Set the text size of the labels in scale-independent pixels
-         *
-         * @param textSizeMonthName the month name text size, in SP
-         * @param textSizeDayNumber the day number text size, in SP
-         * @param textSizeDayName   the day name text size, in SP
-         */
-        public Builder textSize(float textSizeMonthName, float textSizeDayNumber,
-                                float textSizeDayName) {
-            this.textSizeMonthName = textSizeMonthName;
-            this.textSizeDayNumber = textSizeDayNumber;
-            this.textSizeDayName = textSizeDayName;
-            return this;
-        }
-
-        /**
-         * Set the text size of the month name label in scale-independent pixels
-         *
-         * @param textSizeMonthName the month name text size, in SP
-         */
-        public Builder textSizeMonthName(float textSizeMonthName) {
-            this.textSizeMonthName = textSizeMonthName;
-            return this;
-        }
-
-        /**
-         * Set the text size of the day number label in scale-independent pixels
-         *
-         * @param textSizeDayNumber the day number text size, in SP
-         */
-        public Builder textSizeDayNumber(float textSizeDayNumber) {
-            this.textSizeDayNumber = textSizeDayNumber;
-            return this;
-        }
-
-        /**
-         * Set the text size of the day name label in scale-independent pixels
-         *
-         * @param textSizeDayName the day name text size, in SP
-         */
-        public Builder textSizeDayName(float textSizeDayName) {
-            this.textSizeDayName = textSizeDayName;
-            return this;
-        }
-
-        public Builder showDayName(boolean value) {
-            showDayName = value;
-            return this;
-        }
-
-        public Builder showMonthName(boolean value) {
-            showMonthName = value;
-            return this;
+        private void initDefaultValues() throws IllegalStateException{
+            /* Defaults variables */
+            if ((dateStartCalendar == null) || (dateEndCalendar == null)) {
+                throw new IllegalStateException("HorizontalCalendar range was not specified, either startDate or endDate is null!");
+            }
+            HorizontalCalendarPredicate defaultDisablePredicate = new DefaultDisablePredicate(dateStartCalendar, dateEndCalendar);
+            if (disablePredicate == null) {
+                disablePredicate = defaultDisablePredicate;
+            } else {
+                disablePredicate = new HorizontalCalendarPredicate.Or(disablePredicate, defaultDisablePredicate);
+            }
+            if (numberOfDatesOnScreen <= 0) {
+                numberOfDatesOnScreen = 5;
+            }
+            if (defaultSelectedDate == null) {
+                defaultSelectedDate = new Date();
+            }
         }
 
         /**
          * @return Instance of {@link HorizontalCalendar} initiated with builder settings
          */
-        public HorizontalCalendar build() {
+        public HorizontalCalendar build() throws IllegalStateException{
             initDefaultValues();
-            HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this);
-            horizontalCalendar.loadHorizontalCalendar(rootView, defaultSelectedDate);
+
+            if (configBuilder == null){
+                configBuilder = new ConfigBuilder(this);
+                configBuilder.end();
+            }
+            CalendarItemStyle defaultStyle = configBuilder.createDefaultStyle();
+            CalendarItemStyle selectedItemStyle = configBuilder.createSelectedItemStyle();
+            HorizontalCalendarConfig config = configBuilder.createConfig();
+
+            HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this, config, defaultStyle, selectedItemStyle);
+            horizontalCalendar.loadHorizontalCalendar(rootView, defaultSelectedDate, disablePredicate);
             return horizontalCalendar;
         }
+    }
 
-        private void initDefaultValues() {
-            /* Defaults variables */
-            if (numberOfDatesOnScreen <= 0) {
-                numberOfDatesOnScreen = 5;
-            }
+    private static class DefaultDisablePredicate implements HorizontalCalendarPredicate {
 
-            if ((formatDayName == null) && showDayName) {
-                formatDayName = "EEE";
-            }
-            if (formatDayNumber == null) {
-                formatDayNumber = "dd";
-            }
-            if ((formatMonth == null) && showMonthName) {
-                formatMonth = "MMM";
-            }
-            if (dateStartCalendar == null) {
-                Calendar c = Calendar.getInstance();
-                c.add(Calendar.MONTH, -1);
-                dateStartCalendar = c.getTime();
-            }
-            if (dateEndCalendar == null) {
-                Calendar c2 = Calendar.getInstance();
-                c2.add(Calendar.MONTH, 1);
-                dateEndCalendar = c2.getTime();
-            }
-            if (defaultSelectedDate == null) {
-                defaultSelectedDate = new Date();
-            }
+        private final Date startDate;
+        private final Date endDate;
+
+        DefaultDisablePredicate(Date startDate, Date endDate) {
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
+
+        @Override
+        public boolean test(Date date) {
+            return date.before(startDate) || date.after(endDate);
+        }
+
+        @Override
+        public CalendarItemStyle style() {
+            return new CalendarItemStyle(Color.GRAY, null);
         }
     }
 
@@ -596,7 +449,6 @@ public final class HorizontalCalendar {
                 final int positionOfCenterItem = calendarView.getPositionOfCenterItem();
                 if ((lastSelectedItem == -1) || (lastSelectedItem != positionOfCenterItem)) {
                     //On Scroll, agenda is refresh to update background colors
-                    //mCalendarAdapter.notifyItemRangeChanged(getSelectedDatePosition() - 2, 5, "UPDATE_SELECTOR");
                     refreshItemSelector(positionOfCenterItem);
                     if (lastSelectedItem != -1) {
                         refreshItemSelector(lastSelectedItem);

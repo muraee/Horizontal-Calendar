@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar'
     gitUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar.git'
 
-    libraryVersion = '1.2.2'
+    libraryVersion = '1.2.5'
 
     developerId = 'mulham-raee'
     developerName = 'Mulham Raee'

@@ -26,11 +26,11 @@ public class SampleFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_sample, container, false);
 
-        /** end after 1 month from now */
+        /* end after 1 month from now */
         Calendar endDate = Calendar.getInstance();
         endDate.add(Calendar.MONTH, 1);
 
-        /** start before 1 month from now */
+        /* start before 1 month from now */
         Calendar startDate = Calendar.getInstance();
         startDate.add(Calendar.MONTH, -1);
 
@@ -38,13 +38,15 @@ public class SampleFragment extends Fragment {
                 .startDate(startDate.getTime())
                 .endDate(endDate.getTime())
                 .datesNumberOnScreen(5)
-                .dayNameFormat("EEE")
-                .dayNumberFormat("dd")
-                .monthFormat("MMM")
-                .textSize(14f, 24f, 14f)
-                .showDayName(true)
-                .showMonthName(true)
-                .textColor(Color.LTGRAY, Color.WHITE)
+                .configure()
+                    .formatTopText("MMM")
+                    .formatMiddleText("dd")
+                    .formatBottomText("EEE")
+                    .textSize(14f, 24f, 14f)
+                    .showTopText(true)
+                    .showBottomText(true)
+                    .textColor(Color.LTGRAY, Color.WHITE)
+                .end()
                 .build();
 
         horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {

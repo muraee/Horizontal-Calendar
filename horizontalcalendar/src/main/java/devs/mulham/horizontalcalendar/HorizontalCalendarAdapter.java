@@ -30,35 +30,35 @@ import java.util.concurrent.TimeUnit;
  */
 class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarAdapter.DayViewHolder> {
 
-    private final Context context;
-    final Date dateStart;
-    final Date dateEnd;
+    private final Date dateStart;
+    private final HorizontalCalendarPredicate disablePredicate;
     private int cellWidth;
     private final int itemsCount;
 
-    final HorizontalCalendar horizontalCalendar;
+    private final CalendarItemStyle disabledItemStyle;
 
-    HorizontalCalendarAdapter(HorizontalCalendarView horizontalCalendarView, Date dateStart, Date dateEnd) {
-        this.context = horizontalCalendarView.getContext();
+    HorizontalCalendar horizontalCalendar;
+
+    HorizontalCalendarAdapter(HorizontalCalendar horizontalCalendar, Date dateStart, Date dateEnd, HorizontalCalendarPredicate disablePredicate) {
+        this.horizontalCalendar = horizontalCalendar;
         this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-        this.horizontalCalendar = horizontalCalendarView.getHorizontalCalendar();
-
+        this.disablePredicate = disablePredicate;
+        this.disabledItemStyle = disablePredicate.style();
 
         long diff = dateEnd.getTime() - dateStart.getTime(); //result in millis
         itemsCount = (int) TimeUnit.MILLISECONDS.toDays(diff) + 1;
 
-        calculateCellWidth();
+        calculateCellWidth(horizontalCalendar.calendarView.getContext());
     }
 
     @Override
     public DayViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
-        View convertView = LayoutInflater.from(context).inflate(R.layout.item_calendar, viewGroup, false);
+        View convertView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_calendar, viewGroup, false);
 
         convertView.setMinimumWidth(cellWidth);
 
         final DayViewHolder holder = new DayViewHolder(convertView);
-        final Integer selectorColor = horizontalCalendar.getSelectorColor();
+        final Integer selectorColor = horizontalCalendar.getConfig().getSelectorColor();
         if (selectorColor != null) {
             holder.selectionView.setBackgroundColor(selectorColor);
         }
@@ -72,52 +72,27 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
     @Override
     public void onBindViewHolder(DayViewHolder holder, int position) {
         Date day = getItem(position);
-        int selectedItemPosition = horizontalCalendar.getSelectedDatePosition();
+        HorizontalCalendarConfig config = horizontalCalendar.getConfig();
 
-        // Selected Day
-        if (position == selectedItemPosition) {
-            holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorSelected());
-            holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorSelected());
-            holder.txtDayName.setTextColor(horizontalCalendar.getTextColorSelected());
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.layoutBackground.setBackground(horizontalCalendar.getSelectedDateBackground());
-            } else {
-                holder.layoutBackground.setBackgroundDrawable(horizontalCalendar.getSelectedDateBackground());
-            }
-            holder.selectionView.setVisibility(View.VISIBLE);
-        }
-        // Unselected Days
-        else {
-            holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorNormal());
-            holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorNormal());
-            holder.txtDayName.setTextColor(horizontalCalendar.getTextColorNormal());
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.layoutBackground.setBackground(null);
-            } else {
-                holder.layoutBackground.setBackgroundDrawable(null);
-            }
-            holder.selectionView.setVisibility(View.INVISIBLE);
-        }
+        holder.textMiddle.setText(DateFormat.format(config.getFormatMiddleText(), day).toString());
+        holder.textMiddle.setTextSize(TypedValue.COMPLEX_UNIT_SP, config.getSizeMiddleText());
 
-        holder.txtDayNumber.setText(DateFormat.format(horizontalCalendar.getFormatDayNumber(), day).toString());
-        holder.txtDayNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                horizontalCalendar.getTextSizeDayNumber());
-
-        if (horizontalCalendar.isShowDayName()) {
-            holder.txtDayName.setText(DateFormat.format(horizontalCalendar.getFormatDayName(), day).toString());
-            holder.txtDayName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                    horizontalCalendar.getTextSizeDayName());
+        if (config.isShowTopText()) {
+            holder.textTop.setText(DateFormat.format(config.getFormatTopText(), day).toString());
+            holder.textTop.setTextSize(TypedValue.COMPLEX_UNIT_SP, config.getSizeTopText());
         } else {
-            holder.txtDayName.setVisibility(View.GONE);
+            holder.textTop.setVisibility(View.GONE);
         }
 
-        if (horizontalCalendar.isShowMonthName()) {
-            holder.txtMonthName.setText(DateFormat.format(horizontalCalendar.getFormatMonth(), day).toString());
-            holder.txtMonthName.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                    horizontalCalendar.getTextSizeMonthName());
+        if (config.isShowBottomText()) {
+            holder.textBottom.setText(DateFormat.format(config.getFormatBottomText(), day).toString());
+            holder.textBottom.setTextSize(TypedValue.COMPLEX_UNIT_SP, config.getSizeBottomText());
         } else {
-            holder.txtMonthName.setVisibility(View.GONE);
+            holder.textBottom.setVisibility(View.GONE);
         }
+
+        applyStyle(holder, day, position);
+
     }
 
     @Override
@@ -127,33 +102,43 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             return;
         }
 
+        Date day = getItem(position);
+        applyStyle(holder, day, position);
+    }
+
+    private void applyStyle(DayViewHolder holder, Date day, int position) {
         int selectedItemPosition = horizontalCalendar.getSelectedDatePosition();
+
+        boolean isDisabled = disablePredicate.test(day);
+        holder.rootView.setEnabled(!isDisabled);
+        if (isDisabled && (disabledItemStyle != null)) {
+            applyStyle(holder, disabledItemStyle);
+            holder.selectionView.setVisibility(View.INVISIBLE);
+            return;
+        }
 
         // Selected Day
         if (position == selectedItemPosition) {
-            holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorSelected());
-            holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorSelected());
-            holder.txtDayName.setTextColor(horizontalCalendar.getTextColorSelected());
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.layoutBackground.setBackground(horizontalCalendar.getSelectedDateBackground());
-            } else {
-                holder.layoutBackground.setBackgroundDrawable(horizontalCalendar.getSelectedDateBackground());
-            }
+            applyStyle(holder, horizontalCalendar.getSelectedItemStyle());
             holder.selectionView.setVisibility(View.VISIBLE);
         }
         // Unselected Days
         else {
-            holder.txtDayNumber.setTextColor(horizontalCalendar.getTextColorNormal());
-            holder.txtMonthName.setTextColor(horizontalCalendar.getTextColorNormal());
-            holder.txtDayName.setTextColor(horizontalCalendar.getTextColorNormal());
-            if (Build.VERSION.SDK_INT >= 16) {
-                holder.layoutBackground.setBackground(null);
-            } else {
-                holder.layoutBackground.setBackgroundDrawable(null);
-            }
+            applyStyle(holder, horizontalCalendar.getDefaultStyle());
             holder.selectionView.setVisibility(View.INVISIBLE);
         }
+    }
 
+    private void applyStyle(DayViewHolder holder, CalendarItemStyle itemStyle) {
+        holder.textTop.setTextColor(itemStyle.getColorTopText());
+        holder.textMiddle.setTextColor(itemStyle.getColorMiddleText());
+        holder.textBottom.setTextColor(itemStyle.getColorBottomText());
+
+        if (Build.VERSION.SDK_INT >= 16) {
+            holder.layoutBackground.setBackground(itemStyle.getBackground());
+        } else {
+            holder.layoutBackground.setBackgroundDrawable(itemStyle.getBackground());
+        }
     }
 
     @Override
@@ -175,10 +160,15 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         return calendar.getTime();
     }
 
+    public boolean isDisabled(int position) {
+        Date date = getItem(position);
+        return disablePredicate.test(date);
+    }
+
     /**
      * calculate each item width depends on {@link HorizontalCalendar#numberOfDatesOnScreen}
      */
-    private void calculateCellWidth() {
+    private void calculateCellWidth(Context context) {
         Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         Point size = new Point();
 
@@ -200,12 +190,8 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
             if (holder.getAdapterPosition() == -1)
                 return;
 
-            Date date = getItem(holder.getAdapterPosition());
-
-            if (!date.before(dateStart) && !date.after(dateEnd)) {
-                horizontalCalendar.calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
-                horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
-            }
+            horizontalCalendar.calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
+            horizontalCalendar.centerCalendarToPosition(holder.getAdapterPosition());
         }
     }
 
@@ -220,7 +206,7 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
         public boolean onLongClick(View v) {
             Date date = getItem(holder.getAdapterPosition());
             HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
-            if ((calendarListener != null) && !date.before(dateStart) && !date.after(dateEnd)) {
+            if (calendarListener != null) {
                 return calendarListener.onDateLongClicked(date, holder.getAdapterPosition());
             }
             return false;
@@ -228,21 +214,21 @@ class HorizontalCalendarAdapter extends RecyclerView.Adapter<HorizontalCalendarA
     }
 
     static class DayViewHolder extends RecyclerView.ViewHolder {
-        TextView txtDayNumber;
-        TextView txtDayName;
-        TextView txtMonthName;
+        TextView textTop;
+        TextView textMiddle;
+        TextView textBottom;
         View selectionView;
         View layoutBackground;
         View rootView;
 
-        public DayViewHolder(View rootView) {
+        DayViewHolder(View rootView) {
             super(rootView);
             this.rootView = rootView;
-            txtDayNumber = rootView.findViewById(R.id.dayNumber);
-            txtDayName = rootView.findViewById(R.id.dayName);
-            txtMonthName = rootView.findViewById(R.id.monthName);
-            layoutBackground = rootView.findViewById(R.id.layoutBackground);
-            selectionView = rootView.findViewById(R.id.selection_view);
+            textTop = rootView.findViewById(R.id.hc_text_top);
+            textMiddle = rootView.findViewById(R.id.hc_text_middle);
+            textBottom = rootView.findViewById(R.id.hc_text_bottom);
+            layoutBackground = rootView.findViewById(R.id.hc_layoutBackground);
+            selectionView = rootView.findViewById(R.id.hc_selector);
         }
     }
 }

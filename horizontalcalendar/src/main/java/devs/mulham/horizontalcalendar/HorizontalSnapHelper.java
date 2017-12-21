@@ -30,11 +30,17 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
                 selectedItemPosition = layoutManager.getPosition(snapView);
             }
 
-            horizontalCalendar.calendarListener
-                    .onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
+            notifyCalendarListener(selectedItemPosition);
         }
 
         return snapView;
+    }
+
+    private void notifyCalendarListener(int selectedItemPosition){
+        if (!horizontalCalendar.isItemDisabled(selectedItemPosition)){
+            horizontalCalendar.calendarListener
+                    .onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
+        }
     }
 
     @Override

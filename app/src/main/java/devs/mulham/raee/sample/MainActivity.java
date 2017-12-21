@@ -45,13 +45,16 @@ public class MainActivity extends AppCompatActivity {
                 .startDate(startDate.getTime())
                 .endDate(endDate.getTime())
                 .datesNumberOnScreen(5)
-                .dayNameFormat("EEE")
-                .dayNumberFormat("dd")
-                .monthFormat("MMM")
-                .showDayName(true)
-                .showMonthName(true)
+                .configure()
+                    .formatTopText("MMM")
+                    .formatMiddleText("dd")
+                    .formatBottomText("EEE")
+                    .showTopText(true)
+                    .showBottomText(true)
+                    .textColor(Color.LTGRAY, Color.WHITE)
+                    .colorTextMiddle(Color.LTGRAY, Color.parseColor("#ffd54f"))
+                .end()
                 .defaultSelectedDate(defaultDate)
-                .textColor(Color.LTGRAY, Color.WHITE)
                 .build();
 
         Log.i("Default Date", DateFormat.getDateInstance().format(defaultDate));

@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="HorizontalCalendarView">
-        <!-- Text color for all dates except selected Date.-->
+        <!-- Default text color for all texts -->
         <attr name="textColorNormal" format="color" />
-        <!-- Text color for selected Date. -->
+        <!-- Default top text color -->
+        <attr name="colorTopText" format="color" />
+        <!-- Default Middle text color -->
+        <attr name="colorMiddleText" format="color" />
+        <!-- Default Bottom text color -->
+        <attr name="colorBottomText" format="color" />
+
+        <!-- Selected item's text color for all texts -->
         <attr name="textColorSelected" format="color" />
+        <!-- Selected item's top text color -->
+        <attr name="colorTopTextSelected" format="color" />
+        <!-- Selected item's Middle text color -->
+        <attr name="colorMiddleTextSelected" format="color" />
+        <!-- Selected item's Bottom text color -->
+        <attr name="colorBottomTextSelected" format="color" />
+        <!-- Selected item's background drawable -->
+        <attr name="selectedDateBackground" format="reference" />
+
         <!-- Background color for selector bar. -->
         <attr name="selectorColor" format="color" />
-        <!-- Background drawable for selected date item. -->
-        <attr name="selectedDateBackground" format="reference" />
-        <!-- Text size for month name. -->
-        <attr name="textSizeMonthName" format="dimension" />
-        <!-- Text size for day number. -->
-        <attr name="textSizeDayNumber" format="dimension" />
-        <!-- Text size for day name. -->
-        <attr name="textSizeDayName" format="dimension" />
+
+        <!-- Top text size -->
+        <attr name="sizeTopText" format="dimension" />
+        <!-- Middle text size -->
+        <attr name="sizeMiddleText" format="dimension" />
+        <!-- Bottom text size -->
+        <attr name="sizeBottomText" format="dimension" />
+
     </declare-styleable>
 </resources>
