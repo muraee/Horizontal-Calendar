@@ -24,8 +24,8 @@ import devs.mulham.horizontalcalendar.utils.Utils;
  */
 public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, Calendar> {
 
-    private final Calendar startDate;
-    private final int itemsCount;
+    private Calendar startDate;
+    private int itemsCount;
 
     public DaysAdapter(HorizontalCalendar horizontalCalendar, Calendar startDate, Calendar endDate, HorizontalCalendarPredicate disablePredicate) {
         super(R.layout.hc_item_calendar, horizontalCalendar, disablePredicate);
@@ -45,6 +45,11 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
     public void onBindViewHolder(DateViewHolder holder, int position) {
         Calendar day = getItem(position);
         HorizontalCalendarConfig config = horizontalCalendar.getConfig();
+
+        final Integer selectorColor = horizontalCalendar.getConfig().getSelectorColor();
+        if (selectorColor != null) {
+            holder.selectionView.setBackgroundColor(selectorColor);
+        }
 
         holder.textMiddle.setText(DateFormat.format(config.getFormatMiddleText(), day));
         holder.textMiddle.setTextSize(TypedValue.COMPLEX_UNIT_SP, config.getSizeMiddleText());
@@ -95,6 +100,12 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
         calendar.add(Calendar.DATE, daysDiff);
 
         return calendar;
+    }
+
+    public void update(Calendar startDate, Calendar endDate){
+        this.startDate = startDate;
+        itemsCount = calculateItemsCount(endDate);
+        notifyDataSetChanged();
     }
 
     private int calculateItemsCount(Calendar endDate) {

@@ -33,8 +33,8 @@ public final class HorizontalCalendar {
     private HorizontalCalendarBaseAdapter mCalendarAdapter;
 
     //Start & End Dates
-    private final Calendar startDate;
-    private final Calendar endDate;
+    Calendar startDate;
+    Calendar endDate;
 
     //Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
@@ -63,7 +63,7 @@ public final class HorizontalCalendar {
     }
 
     /* Init Calendar View */
-    void loadHorizontalCalendar(View rootView, final Calendar defaultSelectedDate, final HorizontalCalendarPredicate disablePredicate) {
+    void init(View rootView, final Calendar defaultSelectedDate, HorizontalCalendarPredicate disablePredicate) {
         calendarView = rootView.findViewById(calendarId);
         calendarView.setHasFixedSize(true);
         calendarView.setHorizontalScrollBarEnabled(false);
@@ -71,6 +71,12 @@ public final class HorizontalCalendar {
 
         HorizontalSnapHelper snapHelper = new HorizontalSnapHelper();
         snapHelper.attachToHorizontalCalendar(this);
+
+        if (disablePredicate == null) {
+            disablePredicate = defaultDisablePredicate;
+        } else {
+            disablePredicate = new HorizontalCalendarPredicate.Or(disablePredicate, defaultDisablePredicate);
+        }
 
         mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate);
         calendarView.setAdapter(mCalendarAdapter);
@@ -178,6 +184,10 @@ public final class HorizontalCalendar {
         return mCalendarAdapter.isDisabled(position);
     }
 
+    public void refresh(){
+        mCalendarAdapter.notifyDataSetChanged();
+    }
+
     public void show() {
         calendarView.setVisibility(View.VISIBLE);
     }
@@ -232,6 +242,14 @@ public final class HorizontalCalendar {
 
     public Context getContext() {
         return calendarView.getContext();
+    }
+
+    public void setRange(Calendar startDate, Calendar endDate){
+        this.startDate = startDate;
+        this.endDate = endDate;
+       if (mCalendarAdapter instanceof DaysAdapter){
+           ((DaysAdapter) mCalendarAdapter).update(startDate, endDate);
+       }
     }
 
     public CalendarItemStyle getDefaultStyle() {
@@ -350,12 +368,6 @@ public final class HorizontalCalendar {
             if ((startDate == null) || (endDate == null)) {
                 throw new IllegalStateException("HorizontalCalendar range was not specified, either startDate or endDate is null!");
             }
-            HorizontalCalendarPredicate defaultDisablePredicate = new DefaultDisablePredicate(startDate, endDate);
-            if (disablePredicate == null) {
-                disablePredicate = defaultDisablePredicate;
-            } else {
-                disablePredicate = new HorizontalCalendarPredicate.Or(disablePredicate, defaultDisablePredicate);
-            }
             if (numberOfDatesOnScreen <= 0) {
                 numberOfDatesOnScreen = 5;
             }
@@ -379,20 +391,12 @@ public final class HorizontalCalendar {
             HorizontalCalendarConfig config = configBuilder.createConfig();
 
             HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this, config, defaultStyle, selectedItemStyle);
-            horizontalCalendar.loadHorizontalCalendar(rootView, defaultSelectedDate, disablePredicate);
+            horizontalCalendar.init(rootView, defaultSelectedDate, disablePredicate);
             return horizontalCalendar;
         }
     }
 
-    private static class DefaultDisablePredicate implements HorizontalCalendarPredicate {
-
-        private final Calendar startDate;
-        private final Calendar endDate;
-
-        DefaultDisablePredicate(Calendar startDate, Calendar endDate) {
-            this.startDate = startDate;
-            this.endDate = endDate;
-        }
+    private final HorizontalCalendarPredicate defaultDisablePredicate = new HorizontalCalendarPredicate() {
 
         @Override
         public boolean test(Calendar date) {
@@ -403,7 +407,7 @@ public final class HorizontalCalendar {
         public CalendarItemStyle style() {
             return new CalendarItemStyle(Color.GRAY, null);
         }
-    }
+    };
 
     private class HorizontalCalendarScrollListener extends RecyclerView.OnScrollListener {
 

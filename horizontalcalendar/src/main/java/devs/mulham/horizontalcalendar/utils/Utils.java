@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 
 /**
- * @author Raee, Mulham (mulham.raee@gmail.com)
+ * @author Mulham-Raee
+ * @since v1.2.7
  */
 public final class Utils {
 

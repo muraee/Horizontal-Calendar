@@ -50,12 +50,6 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         viewHolder.itemView.setOnClickListener(new MyOnClickListener(viewHolder));
         viewHolder.itemView.setOnLongClickListener(new MyOnLongClickListener(viewHolder));
 
-
-        final Integer selectorColor = horizontalCalendar.getConfig().getSelectorColor();
-        if (selectorColor != null) {
-            viewHolder.selectionView.setBackgroundColor(selectorColor);
-        }
-
         return viewHolder;
     }
 

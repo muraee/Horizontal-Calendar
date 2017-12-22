@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
-import devs.mulham.horizontalcalendar.adapter.DaysAdapter;
+import devs.mulham.horizontalcalendar.adapter.HorizontalCalendarBaseAdapter;
 import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
 
@@ -109,8 +109,8 @@ public class HorizontalCalendarView extends RecyclerView {
     }
 
     @Override
-    public DaysAdapter getAdapter() {
-        return (DaysAdapter) super.getAdapter();
+    public HorizontalCalendarBaseAdapter getAdapter() {
+        return (HorizontalCalendarBaseAdapter) super.getAdapter();
     }
 
     @Override
