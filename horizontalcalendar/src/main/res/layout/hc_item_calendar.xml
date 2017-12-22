@@ -1,43 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/hc_layoutBackground"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:foreground="?selectableItemBackground"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/hc_text_top"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Jan"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:id="@+id/hc_layoutContent"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/hc_text_middle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="2"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/hc_text_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            tools:text="Jan" />
 
-    <TextView
-        android:id="@+id/hc_text_bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Mon"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
+        <TextView
+            android:id="@+id/hc_text_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textStyle="bold"
+            tools:text="2" />
 
-    <View
-        android:id="@+id/hc_selector"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_marginTop="4dp"
-        android:background="#f00f0f"
-        android:visibility="visible" />
+        <TextView
+            android:id="@+id/hc_text_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            tools:text="Mon" />
 
-</LinearLayout>
+        <View
+            android:id="@+id/hc_selector"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="4dp"
+            android:background="#f00f0f"
+            android:visibility="visible" />
+
+    </LinearLayout>
+</FrameLayout>

@@ -1,9 +1,12 @@
-package devs.mulham.horizontalcalendar;
+package devs.mulham.horizontalcalendar.utils;
 
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import devs.mulham.horizontalcalendar.HorizontalCalendar;
+import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 
 /**
  * @author Mulham-Raee
@@ -12,12 +15,13 @@ import android.view.View;
 public class HorizontalSnapHelper extends LinearSnapHelper {
 
     private HorizontalCalendar horizontalCalendar;
+    private HorizontalCalendarView calendarView;
 
     @Override
     public View findSnapView(RecyclerView.LayoutManager layoutManager) {
         View snapView = super.findSnapView(layoutManager);
 
-        if (horizontalCalendar.calendarView.getScrollState() != RecyclerView.SCROLL_STATE_DRAGGING){
+        if (calendarView.getScrollState() != RecyclerView.SCROLL_STATE_DRAGGING){
             int selectedItemPosition;
             if (snapView == null){
                 // no snapping required
@@ -38,7 +42,7 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
 
     private void notifyCalendarListener(int selectedItemPosition){
         if (!horizontalCalendar.isItemDisabled(selectedItemPosition)){
-            horizontalCalendar.calendarListener
+            horizontalCalendar.getCalendarListener()
                     .onDateSelected(horizontalCalendar.getDateAt(selectedItemPosition), selectedItemPosition);
         }
     }
@@ -48,12 +52,9 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
         // Do nothing
     }
 
-    void attachToHorizontalCalendar(@Nullable HorizontalCalendar horizontalCalendar) throws IllegalStateException {
+    public void attachToHorizontalCalendar(@Nullable HorizontalCalendar horizontalCalendar) throws IllegalStateException {
         this.horizontalCalendar = horizontalCalendar;
-        attachToRecyclerView();
-    }
-
-    private void attachToRecyclerView(){
-        super.attachToRecyclerView(horizontalCalendar.calendarView);
+        this.calendarView = horizontalCalendar.getCalendarView();
+        super.attachToRecyclerView(calendarView);
     }
 }

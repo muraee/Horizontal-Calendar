@@ -1,0 +1,148 @@
+package devs.mulham.horizontalcalendar.adapter;
+
+import android.os.Build;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.Calendar;
+
+import devs.mulham.horizontalcalendar.HorizontalCalendar;
+import devs.mulham.horizontalcalendar.HorizontalCalendarView;
+import devs.mulham.horizontalcalendar.HorizontalLayoutManager;
+import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
+import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
+import devs.mulham.horizontalcalendar.utils.HorizontalCalendarPredicate;
+import devs.mulham.horizontalcalendar.utils.Utils;
+
+/**
+ * Base class for all adapters for {@link HorizontalCalendarView HorizontalCalendarView}
+ *
+ * @author Mulham-Raee
+ * @since v1.2.7
+ */
+public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T extends Calendar> extends RecyclerView.Adapter<VH> {
+
+    private final int itemResId;
+    final HorizontalCalendar horizontalCalendar;
+    private final HorizontalCalendarPredicate disablePredicate;
+    private final int cellWidth;
+
+    private CalendarItemStyle disabledItemStyle;
+
+    protected HorizontalCalendarBaseAdapter(int itemResId, final HorizontalCalendar horizontalCalendar, HorizontalCalendarPredicate disablePredicate) {
+        this.itemResId = itemResId;
+        this.horizontalCalendar = horizontalCalendar;
+        this.disablePredicate = disablePredicate;
+        if (disablePredicate != null) {
+            this.disabledItemStyle = disablePredicate.style();
+        }
+
+        cellWidth = Utils.calculateCellWidth(horizontalCalendar.getContext(), horizontalCalendar.getNumberOfDatesOnScreen());
+    }
+
+    @Override
+    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(itemResId, parent, false);
+
+        final VH viewHolder = createViewHolder(itemView, cellWidth);
+        viewHolder.itemView.setOnClickListener(new MyOnClickListener(viewHolder));
+        viewHolder.itemView.setOnLongClickListener(new MyOnLongClickListener(viewHolder));
+
+
+        final Integer selectorColor = horizontalCalendar.getConfig().getSelectorColor();
+        if (selectorColor != null) {
+            viewHolder.selectionView.setBackgroundColor(selectorColor);
+        }
+
+        return viewHolder;
+    }
+
+    protected abstract VH createViewHolder(View itemView, int cellWidth);
+
+    public abstract T getItem(int position);
+
+    public boolean isDisabled(int position) {
+        if (disablePredicate == null) {
+            return false;
+        }
+        Calendar date = getItem(position);
+        return disablePredicate.test(date);
+    }
+
+
+    protected void applyStyle(VH viewHolder, Calendar date, int position) {
+        int selectedItemPosition = horizontalCalendar.getSelectedDatePosition();
+
+        if (disablePredicate != null) {
+            boolean isDisabled = disablePredicate.test(date);
+            viewHolder.itemView.setEnabled(!isDisabled);
+            if (isDisabled && (disabledItemStyle != null)) {
+                applyStyle(viewHolder, disabledItemStyle);
+                viewHolder.selectionView.setVisibility(View.INVISIBLE);
+                return;
+            }
+        }
+
+        // Selected Day
+        if (position == selectedItemPosition) {
+            applyStyle(viewHolder, horizontalCalendar.getSelectedItemStyle());
+            viewHolder.selectionView.setVisibility(View.VISIBLE);
+        }
+        // Unselected Days
+        else {
+            applyStyle(viewHolder, horizontalCalendar.getDefaultStyle());
+            viewHolder.selectionView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    protected void applyStyle(VH viewHolder, CalendarItemStyle itemStyle) {
+        viewHolder.textTop.setTextColor(itemStyle.getColorTopText());
+        viewHolder.textMiddle.setTextColor(itemStyle.getColorMiddleText());
+        viewHolder.textBottom.setTextColor(itemStyle.getColorBottomText());
+
+        if (Build.VERSION.SDK_INT >= 16) {
+            viewHolder.layoutContent.setBackground(itemStyle.getBackground());
+        } else {
+            viewHolder.layoutContent.setBackgroundDrawable(itemStyle.getBackground());
+        }
+    }
+
+    private class MyOnClickListener implements View.OnClickListener {
+        private final RecyclerView.ViewHolder viewHolder;
+
+        MyOnClickListener(RecyclerView.ViewHolder viewHolder) {
+            this.viewHolder = viewHolder;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = viewHolder.getAdapterPosition();
+            if (position == -1)
+                return;
+
+            horizontalCalendar.getCalendarView().setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
+            horizontalCalendar.centerCalendarToPosition(position);
+        }
+    }
+
+    private class MyOnLongClickListener implements View.OnLongClickListener {
+        private final RecyclerView.ViewHolder viewHolder;
+
+        MyOnLongClickListener(RecyclerView.ViewHolder viewHolder) {
+            this.viewHolder = viewHolder;
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int position = viewHolder.getAdapterPosition();
+            Calendar date = getItem(position);
+            HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
+            if (calendarListener != null) {
+                return calendarListener.onDateLongClicked(date, position);
+            }
+            return false;
+        }
+    }
+}

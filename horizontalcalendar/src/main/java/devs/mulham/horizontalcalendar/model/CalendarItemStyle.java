@@ -1,8 +1,6 @@
-package devs.mulham.horizontalcalendar;
+package devs.mulham.horizontalcalendar.model;
 
 import android.graphics.drawable.Drawable;
-
-import java.util.Calendar;
 
 /**
  * @author Mulham-Raee

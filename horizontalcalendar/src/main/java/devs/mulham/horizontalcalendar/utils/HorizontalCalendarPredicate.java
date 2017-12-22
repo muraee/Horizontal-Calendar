@@ -1,6 +1,8 @@
-package devs.mulham.horizontalcalendar;
+package devs.mulham.horizontalcalendar.utils;
 
-import java.util.Date;
+import java.util.Calendar;
+
+import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 
 /**
  * @author Mulham-Raee
@@ -8,7 +10,7 @@ import java.util.Date;
  */
 public interface HorizontalCalendarPredicate {
 
-    boolean test(Date date);
+    boolean test(Calendar date);
 
     CalendarItemStyle style();
 
@@ -17,13 +19,13 @@ public interface HorizontalCalendarPredicate {
         private final HorizontalCalendarPredicate firstPredicate;
         private final HorizontalCalendarPredicate secondPredicate;
 
-        Or(HorizontalCalendarPredicate firstPredicate, HorizontalCalendarPredicate secondPredicate) {
+        public Or(HorizontalCalendarPredicate firstPredicate, HorizontalCalendarPredicate secondPredicate) {
             this.firstPredicate = firstPredicate;
             this.secondPredicate = secondPredicate;
         }
 
         @Override
-        public boolean test(Date date) {
+        public boolean test(Calendar date) {
             return firstPredicate.test(date) || secondPredicate.test(date);
         }
 

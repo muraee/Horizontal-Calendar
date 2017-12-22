@@ -8,6 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
+import devs.mulham.horizontalcalendar.adapter.DaysAdapter;
+import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
+import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
+
 /**
  * See {devs.mulham.horizontalcalendar.R.styleable#HorizontalCalendarView HorizontalCalendarView Attributes}
  *
@@ -19,7 +23,7 @@ public class HorizontalCalendarView extends RecyclerView {
     private CalendarItemStyle defaultStyle;
     private CalendarItemStyle selectedItemStyle;
     private HorizontalCalendarConfig config;
-    private HorizontalCalendar horizontalCalendar;
+    private int shiftCells;
 
     private final float FLING_SCALE_DOWN_FACTOR = 0.5f;
 
@@ -105,8 +109,8 @@ public class HorizontalCalendarView extends RecyclerView {
     }
 
     @Override
-    public HorizontalCalendarAdapter getAdapter() {
-        return (HorizontalCalendarAdapter) super.getAdapter();
+    public DaysAdapter getAdapter() {
+        return (DaysAdapter) super.getAdapter();
     }
 
     @Override
@@ -124,11 +128,7 @@ public class HorizontalCalendarView extends RecyclerView {
         return color;
     }
 
-    public HorizontalCalendar getHorizontalCalendar() {
-        return horizontalCalendar;
-    }
-
-    public void setHorizontalCalendar(HorizontalCalendar horizontalCalendar) {
+    public void applyConfigFromLayout(HorizontalCalendar horizontalCalendar) {
         horizontalCalendar.getConfig().setupDefaultValues(config);
         horizontalCalendar.getDefaultStyle().setupDefaultValues(defaultStyle);
         horizontalCalendar.getSelectedItemStyle().setupDefaultValues(selectedItemStyle);
@@ -138,7 +138,7 @@ public class HorizontalCalendarView extends RecyclerView {
         defaultStyle = null;
         selectedItemStyle = null;
 
-        this.horizontalCalendar = horizontalCalendar;
+        this.shiftCells = horizontalCalendar.getNumberOfDatesOnScreen() / 2;
     }
 
     /**
@@ -153,7 +153,7 @@ public class HorizontalCalendarView extends RecyclerView {
             if (firstVisiblePosition == -1) {
                 return -1;
             } else {
-                return firstVisiblePosition + horizontalCalendar.getShiftCells();
+                return firstVisiblePosition + shiftCells;
             }
         }
     }

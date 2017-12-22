@@ -5,18 +5,17 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
-import devs.mulham.horizontalcalendar.HorizontalCalendarListener;
+import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,12 +37,10 @@ public class MainActivity extends AppCompatActivity {
         startDate.add(Calendar.MONTH, -2);
 
         // Default Date set to Today.
-        final Calendar defaultDateCalendar = Calendar.getInstance();
-        final Date defaultDate = defaultDateCalendar.getTime();
+        final Calendar defaultSelectedDate = Calendar.getInstance();
 
         horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
-                .startDate(startDate.getTime())
-                .endDate(endDate.getTime())
+                .range(startDate, endDate)
                 .datesNumberOnScreen(5)
                 .configure()
                     .formatTopText("MMM")
@@ -54,16 +51,17 @@ public class MainActivity extends AppCompatActivity {
                     .textColor(Color.LTGRAY, Color.WHITE)
                     .colorTextMiddle(Color.LTGRAY, Color.parseColor("#ffd54f"))
                 .end()
-                .defaultSelectedDate(defaultDate)
+                .defaultSelectedDate(defaultSelectedDate)
                 .build();
 
-        Log.i("Default Date", DateFormat.getDateInstance().format(defaultDate));
+        Log.i("Default Date", DateFormat.format("EEE, MMM d, yyyy", defaultSelectedDate).toString());
 
         horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             @Override
-            public void onDateSelected(Date date, int position) {
-                Toast.makeText(MainActivity.this, DateFormat.getDateInstance().format(date) + " is selected!", Toast.LENGTH_SHORT).show();
-                Log.i("onDateSelected", DateFormat.getDateInstance().format(date) + " - Position = " + position);
+            public void onDateSelected(Calendar date, int position) {
+                String selectedDateStr = DateFormat.format("EEE, MMM d, yyyy", date).toString();
+                Toast.makeText(MainActivity.this, selectedDateStr + " selected!", Toast.LENGTH_SHORT).show();
+                Log.i("onDateSelected", selectedDateStr + " - Position = " + position);
             }
 
         });

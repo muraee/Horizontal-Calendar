@@ -2,15 +2,21 @@ package devs.mulham.horizontalcalendar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.Calendar;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
+import devs.mulham.horizontalcalendar.adapter.DaysAdapter;
+import devs.mulham.horizontalcalendar.adapter.HorizontalCalendarBaseAdapter;
+import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
+import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
+import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
+import devs.mulham.horizontalcalendar.utils.HorizontalCalendarPredicate;
+import devs.mulham.horizontalcalendar.utils.HorizontalSnapHelper;
+import devs.mulham.horizontalcalendar.utils.Utils;
 
 
 /**
@@ -24,11 +30,11 @@ public final class HorizontalCalendar {
 
     //region private Fields
     HorizontalCalendarView calendarView;
-    private HorizontalCalendarAdapter mCalendarAdapter;
+    private HorizontalCalendarBaseAdapter mCalendarAdapter;
 
     //Start & End Dates
-    private final Date dateStartCalendar;
-    private final Date dateEndCalendar;
+    private final Calendar startDate;
+    private final Calendar endDate;
 
     //Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
@@ -36,11 +42,8 @@ public final class HorizontalCalendar {
     //Interface events
     HorizontalCalendarListener calendarListener;
 
-    final private RecyclerView.OnScrollListener onScrollListener = new HorizontalCalendarScrollListener();
-
     private final int calendarId;
     /* Format, Colors & Font Sizes*/
-    private SimpleDateFormat dateFormat;
     private final CalendarItemStyle defaultStyle;
     private final CalendarItemStyle selectedItemStyle;
     private final HorizontalCalendarConfig config;
@@ -52,30 +55,27 @@ public final class HorizontalCalendar {
     HorizontalCalendar(Builder builder, HorizontalCalendarConfig config, CalendarItemStyle defaultStyle, CalendarItemStyle selectedItemStyle) {
         this.numberOfDatesOnScreen = builder.numberOfDatesOnScreen;
         this.calendarId = builder.viewId;
-        this.dateStartCalendar = builder.dateStartCalendar;
-        this.dateEndCalendar = builder.dateEndCalendar;
+        this.startDate = builder.startDate;
+        this.endDate = builder.endDate;
         this.config = config;
         this.defaultStyle = defaultStyle;
         this.selectedItemStyle = selectedItemStyle;
     }
 
     /* Init Calendar View */
-    void loadHorizontalCalendar(View rootView, final Date defaultSelectedDate, final HorizontalCalendarPredicate disablePredicate) {
-
-        dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-
+    void loadHorizontalCalendar(View rootView, final Calendar defaultSelectedDate, final HorizontalCalendarPredicate disablePredicate) {
         calendarView = rootView.findViewById(calendarId);
         calendarView.setHasFixedSize(true);
         calendarView.setHorizontalScrollBarEnabled(false);
-        calendarView.setHorizontalCalendar(this);
+        calendarView.applyConfigFromLayout(this);
 
         HorizontalSnapHelper snapHelper = new HorizontalSnapHelper();
         snapHelper.attachToHorizontalCalendar(this);
 
-        mCalendarAdapter = new HorizontalCalendarAdapter(this, dateStartCalendar, dateEndCalendar, disablePredicate);
+        mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate);
         calendarView.setAdapter(mCalendarAdapter);
         calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
-        calendarView.addOnScrollListener(onScrollListener);
+        calendarView.addOnScrollListener(new HorizontalCalendarScrollListener());
 
         post(new Runnable() {
             @Override
@@ -101,7 +101,7 @@ public final class HorizontalCalendar {
      *                  ,or false to play default scroll animation speed.
      */
     public void goToday(boolean immediate) {
-        selectDate(new Date(), immediate);
+        selectDate(Calendar.getInstance(), immediate);
     }
 
     /**
@@ -111,7 +111,7 @@ public final class HorizontalCalendar {
      * @param immediate pass true to make the calendar scroll as fast as possible to reach the target date
      *                  ,or false to play default scroll animation speed.
      */
-    public void selectDate(Date date, boolean immediate) {
+    public void selectDate(Calendar date, boolean immediate) {
         int datePosition = positionOfDate(date);
         if (immediate) {
             centerToPositionWithNoAnimation(datePosition);
@@ -129,9 +129,9 @@ public final class HorizontalCalendar {
      *
      * @param position The position to center the calendar to!
      */
-    void centerCalendarToPosition(final int position) {
+    public void centerCalendarToPosition(final int position) {
         if (position != -1) {
-            int relativeCenterPosition = calculateRelativeCenterPosition(position);
+            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), getShiftCells());
             if (relativeCenterPosition == position) {
                 return;
             }
@@ -147,7 +147,7 @@ public final class HorizontalCalendar {
      */
     void centerToPositionWithNoAnimation(final int position) {
         if (position != -1) {
-            int relativeCenterPosition = calculateRelativeCenterPosition(position);
+            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), getShiftCells());
             if (relativeCenterPosition == position) {
                 return;
             }
@@ -165,33 +165,11 @@ public final class HorizontalCalendar {
         }
     }
 
-    private int calculateRelativeCenterPosition(final int position) {
-        final int centerItem = calendarView.getPositionOfCenterItem();
-        final int shiftCells = getShiftCells();
-        int relativeCenterPosition = position;
-
-        if (position > centerItem) {
-            relativeCenterPosition = position + shiftCells;
-        } else if (position < centerItem) {
-            relativeCenterPosition = position - shiftCells;
-        }
-
-        return relativeCenterPosition;
-    }
-
-    int getShiftCells() {
-        return numberOfDatesOnScreen / 2;
-    }
-
-    void refreshItemSelector(int position) {
-        mCalendarAdapter.notifyItemChanged(position, "UPDATE_SELECTOR");
-    }
-
     void refreshItemsSelector(int position1, int... positions) {
-        refreshItemSelector(position1);
+        mCalendarAdapter.notifyItemChanged(position1, "UPDATE_SELECTOR");
         if ((positions != null) && (positions.length > 0)) {
             for (int pos : positions) {
-                refreshItemSelector(pos);
+                mCalendarAdapter.notifyItemChanged(pos, "UPDATE_SELECTOR");
             }
         }
     }
@@ -220,7 +198,7 @@ public final class HorizontalCalendar {
     /**
      * @return the current selected date
      */
-    public Date getSelectedDate() {
+    public Calendar getSelectedDate() {
         return mCalendarAdapter.getItem(calendarView.getPositionOfCenterItem());
     }
 
@@ -236,7 +214,7 @@ public final class HorizontalCalendar {
      * @return the date on this index
      * @throws IndexOutOfBoundsException if position is out of the calendar range
      */
-    public Date getDateAt(int position) throws IndexOutOfBoundsException {
+    public Calendar getDateAt(int position) throws IndexOutOfBoundsException {
         return mCalendarAdapter.getItem(position);
     }
 
@@ -244,8 +222,16 @@ public final class HorizontalCalendar {
      * @param date The date to search for
      * @return true if the calendar contains this date or false otherwise
      */
-    public boolean contains(Date date) {
+    public boolean contains(Calendar date) {
         return positionOfDate(date) != -1;
+    }
+
+    public HorizontalCalendarView getCalendarView() {
+        return calendarView;
+    }
+
+    public Context getContext() {
+        return calendarView.getContext();
     }
 
     public CalendarItemStyle getDefaultStyle() {
@@ -264,22 +250,23 @@ public final class HorizontalCalendar {
         return numberOfDatesOnScreen;
     }
 
+    public int getShiftCells() {
+        return numberOfDatesOnScreen / 2;
+    }
+
     /**
      * @return position of date in Calendar, or -1 if date does not exist
      */
-    public int positionOfDate(Date date) {
-        if (date.before(dateStartCalendar) || date.after(dateEndCalendar)) {
+    public int positionOfDate(Calendar date) {
+        if (date.before(startDate) || date.after(endDate)) {
             return -1;
         }
 
         int position;
-        if (isDatesDaysEquals(date, dateStartCalendar)) {
+        if (Utils.isSameDates(date, startDate)) {
             position = 0;
         } else {
-            long diff = date.getTime() - dateStartCalendar.getTime(); //result in millis
-            long days = TimeUnit.MILLISECONDS.toDays(diff);
-
-            position = (int) days;
+            position = Utils.daysBetween(startDate, date);
         }
 
         final int shiftCells = getShiftCells();
@@ -287,10 +274,11 @@ public final class HorizontalCalendar {
     }
 
     /**
+    /**
      * @return <code>true</code> if dates are equal; <code>false</code> otherwise
      */
-    public boolean isDatesDaysEquals(Date date1, Date date2) {
-        return dateFormat.format(date1).equals(dateFormat.format(date2));
+    public boolean isDatesDaysEquals(Calendar date1, Calendar date2) {
+        return Utils.isSameDates(date1, date2);
     }
 
     public static class Builder {
@@ -299,9 +287,9 @@ public final class HorizontalCalendar {
         final View rootView;
 
         // Start & End Dates
-        Date dateStartCalendar;
-        Date dateEndCalendar;
-        Date defaultSelectedDate;
+        Calendar startDate;
+        Calendar endDate;
+        Calendar defaultSelectedDate;
 
         // Number of Days to Show on Screen
         int numberOfDatesOnScreen;
@@ -328,13 +316,9 @@ public final class HorizontalCalendar {
             this.viewId = viewId;
         }
 
-        public Builder startDate(Date dateStartCalendar) {
-            this.dateStartCalendar = dateStartCalendar;
-            return this;
-        }
-
-        public Builder endDate(Date dateEndCalendar) {
-            this.dateEndCalendar = dateEndCalendar;
+        public Builder range(Calendar startDate, Calendar endDate) {
+            this.startDate = startDate;
+            this.endDate = endDate;
             return this;
         }
 
@@ -343,7 +327,7 @@ public final class HorizontalCalendar {
             return this;
         }
 
-        public Builder defaultSelectedDate(Date date) {
+        public Builder defaultSelectedDate(Calendar date) {
             defaultSelectedDate = date;
             return this;
         }
@@ -353,20 +337,20 @@ public final class HorizontalCalendar {
             return this;
         }
 
-        public ConfigBuilder configure(){
-            if (configBuilder == null){
+        public ConfigBuilder configure() {
+            if (configBuilder == null) {
                 configBuilder = new ConfigBuilder(this);
             }
 
             return configBuilder;
         }
 
-        private void initDefaultValues() throws IllegalStateException{
+        private void initDefaultValues() throws IllegalStateException {
             /* Defaults variables */
-            if ((dateStartCalendar == null) || (dateEndCalendar == null)) {
+            if ((startDate == null) || (endDate == null)) {
                 throw new IllegalStateException("HorizontalCalendar range was not specified, either startDate or endDate is null!");
             }
-            HorizontalCalendarPredicate defaultDisablePredicate = new DefaultDisablePredicate(dateStartCalendar, dateEndCalendar);
+            HorizontalCalendarPredicate defaultDisablePredicate = new DefaultDisablePredicate(startDate, endDate);
             if (disablePredicate == null) {
                 disablePredicate = defaultDisablePredicate;
             } else {
@@ -376,17 +360,17 @@ public final class HorizontalCalendar {
                 numberOfDatesOnScreen = 5;
             }
             if (defaultSelectedDate == null) {
-                defaultSelectedDate = new Date();
+                defaultSelectedDate = Calendar.getInstance();
             }
         }
 
         /**
          * @return Instance of {@link HorizontalCalendar} initiated with builder settings
          */
-        public HorizontalCalendar build() throws IllegalStateException{
+        public HorizontalCalendar build() throws IllegalStateException {
             initDefaultValues();
 
-            if (configBuilder == null){
+            if (configBuilder == null) {
                 configBuilder = new ConfigBuilder(this);
                 configBuilder.end();
             }
@@ -402,16 +386,16 @@ public final class HorizontalCalendar {
 
     private static class DefaultDisablePredicate implements HorizontalCalendarPredicate {
 
-        private final Date startDate;
-        private final Date endDate;
+        private final Calendar startDate;
+        private final Calendar endDate;
 
-        DefaultDisablePredicate(Date startDate, Date endDate) {
+        DefaultDisablePredicate(Calendar startDate, Calendar endDate) {
             this.startDate = startDate;
             this.endDate = endDate;
         }
 
         @Override
-        public boolean test(Date date) {
+        public boolean test(Calendar date) {
             return date.before(startDate) || date.after(endDate);
         }
 
@@ -449,9 +433,9 @@ public final class HorizontalCalendar {
                 final int positionOfCenterItem = calendarView.getPositionOfCenterItem();
                 if ((lastSelectedItem == -1) || (lastSelectedItem != positionOfCenterItem)) {
                     //On Scroll, agenda is refresh to update background colors
-                    refreshItemSelector(positionOfCenterItem);
+                    refreshItemsSelector(positionOfCenterItem);
                     if (lastSelectedItem != -1) {
-                        refreshItemSelector(lastSelectedItem);
+                        refreshItemsSelector(lastSelectedItem);
                     }
                     lastSelectedItem = positionOfCenterItem;
                 }

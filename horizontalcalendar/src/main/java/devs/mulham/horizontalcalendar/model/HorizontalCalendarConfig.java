@@ -1,4 +1,4 @@
-package devs.mulham.horizontalcalendar;
+package devs.mulham.horizontalcalendar.model;
 
 /**
  * @author Mulham-Raee
@@ -6,13 +6,13 @@ package devs.mulham.horizontalcalendar;
  */
 public class HorizontalCalendarConfig {
 
-    static final float DEFAULT_SIZE_TEXT_TOP = 14f;
-    static final float DEFAULT_SIZE_TEXT_MIDDLE = 24f;
-    static final float DEFAULT_SIZE_TEXT_BOTTOM = 14f;
+    public static final float DEFAULT_SIZE_TEXT_TOP = 14f;
+    public static final float DEFAULT_SIZE_TEXT_MIDDLE = 24f;
+    public static final float DEFAULT_SIZE_TEXT_BOTTOM = 14f;
 
-    static final String DEFAULT_FORMAT_TEXT_TOP = "MMM";
-    static final String DEFAULT_FORMAT_TEXT_MIDDLE = "dd";
-    static final String DEFAULT_FORMAT_TEXT_BOTTOM = "EEE";
+    public static final String DEFAULT_FORMAT_TEXT_TOP = "MMM";
+    public static final String DEFAULT_FORMAT_TEXT_MIDDLE = "dd";
+    public static final String DEFAULT_FORMAT_TEXT_BOTTOM = "EEE";
 
     /* Format & Font Sizes*/
     private String formatTopText;

@@ -25,7 +25,6 @@
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
             app:textColorSelected="#FFFF"
             app:sizeBottomText="14sp"
             app:sizeMiddleText="20sp"/>
