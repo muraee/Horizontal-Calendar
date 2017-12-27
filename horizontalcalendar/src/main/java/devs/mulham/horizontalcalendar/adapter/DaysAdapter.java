@@ -102,10 +102,12 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
         return calendar;
     }
 
-    public void update(Calendar startDate, Calendar endDate){
+    public void update(Calendar startDate, Calendar endDate, boolean notify){
         this.startDate = startDate;
         itemsCount = calculateItemsCount(endDate);
-        notifyDataSetChanged();
+        if (notify){
+            notifyDataSetChanged();
+        }
     }
 
     private int calculateItemsCount(Calendar endDate) {

@@ -248,7 +248,7 @@ public final class HorizontalCalendar {
         this.startDate = startDate;
         this.endDate = endDate;
        if (mCalendarAdapter instanceof DaysAdapter){
-           ((DaysAdapter) mCalendarAdapter).update(startDate, endDate);
+           ((DaysAdapter) mCalendarAdapter).update(startDate, endDate, false);
        }
     }
 
@@ -281,7 +281,7 @@ public final class HorizontalCalendar {
         }
 
         int position;
-        if (Utils.isSameDates(date, startDate)) {
+        if (Utils.isSameDate(date, startDate)) {
             position = 0;
         } else {
             position = Utils.daysBetween(startDate, date);
@@ -289,14 +289,6 @@ public final class HorizontalCalendar {
 
         final int shiftCells = getShiftCells();
         return position + shiftCells;
-    }
-
-    /**
-    /**
-     * @return <code>true</code> if dates are equal; <code>false</code> otherwise
-     */
-    public boolean isDatesDaysEquals(Calendar date1, Calendar date2) {
-        return Utils.isSameDates(date1, date2);
     }
 
     public static class Builder {

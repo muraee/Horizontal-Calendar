@@ -17,7 +17,7 @@ repositories {
     }
     
 dependencies {
-      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.2.5'
+      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.3.0'
     }
 ```
 
@@ -59,8 +59,7 @@ startDate.add(Calendar.MONTH, -1);
 
 ```java
 HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
-                .startDate(startDate.getTime())
-                .endDate(endDate.getTime())
+                .range(startDate, endDate)
                 .datesNumberOnScreen(5)
                 .build();
 ```
@@ -77,7 +76,7 @@ HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(rootView,
 ```java
 horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             @Override
-            public void onDateSelected(Date date, int position) {
+            public void onDateSelected(Calendar date, int position) {
                 //do something
             }
         });
@@ -88,7 +87,7 @@ horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
 ```java
 horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             @Override
-            public void onDateSelected(Date date, int position) {
+            public void onDateSelected(Calendar date, int position) {
 
             }
 
@@ -99,7 +98,7 @@ horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             }
 
             @Override
-            public boolean onDateLongClicked(Date date, int position) {
+            public boolean onDateLongClicked(Calendar date, int position) {
                 return true;
             }
         });
@@ -114,19 +113,17 @@ horizontalCalendar.setCalendarListener(new HorizontalCalendarListener() {
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
             app:textColorNormal="#bababa"
             app:textColorSelected="#FFFF"
-            app:selectorColor="#c62828"   // default to colorAccent.
-            app:selectedDateBackground="@drawable/myDrwable"/>
+            app:selectorColor="#c62828"  //default to colorAccent
+            app:selectedDateBackground="@drawable/myDrawable"/>
 ```
 
 - Or you can do it programmatically in your **Activity** or **Fragment** using `HorizontalCalendar.Builder`:
 
 ```java
 HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
-                .startDate(Date startDate)
-                .endDate(Date endDate)
+                .range(Calendar startDate, Calendar endDate)
                 .datesNumberOnScreen(int number)   // Number of Dates cells shown on screen (default to 5).
                 .configure()    // starts configuration.
                     .formatTopText(String dateFormat)       // default to "MMM".
@@ -156,13 +153,49 @@ builder.configure()
        .end()
 ```
 
+## Reconfiguration
+HorizontalCalendar configurations can be changed after initialization:
+ 
+- Change calendar dates range:
+```java
+horizontalCalendar.setRange(Calendar startDate, Calendar endDate);
+```
+ 
+- Change default(not selected) items style:
+```java
+horizontalCalendar.getDefaultStyle()
+        .setColorTopText(int color)
+        .setColorMiddleText(int color)
+        .setColorBottomText(int color)
+        .setBackground(Drawable background);      
+```
+
+- Change selected item style:
+```java
+horizontalCalendar.getSelectedItemStyle()
+        .setColorTopText(int color)
+        ..............
+```
+
+- Change formats, text sizes and selector color:
+```java
+horizontalCalendar.getConfig()
+        .setSelectorColor(int color)
+        .setFormatTopText(String format)
+        .setSizeTopText(float size)
+        ..............
+```
+
+#### Important
+**Make sure to call `horizontalCalendar.refresh();` when you finish your changes**
+
 ## Features
 
 - Disable specific dates with `HorizontalCalendarPredicate`, a unique style for disabled dates can be specified as well with `CalendarItemStyle`:
 ```java
 builder.disableDates(new HorizontalCalendarPredicate() {
                            @Override
-                           public boolean test(Date date) {
+                           public boolean test(Calendar date) {
                                return false;    // return true if this date should be disabled, false otherwise.
                            }
        
@@ -175,19 +208,24 @@ builder.disableDates(new HorizontalCalendarPredicate() {
 
 - Select a specific **Date** programmatically with the option whether to play the animation or not:
 ```java
-horizontalCalendar.selectDate(Date date, boolean immediate); // set immediate to false to ignore animation.
+horizontalCalendar.selectDate(Calendar date, boolean immediate); // set immediate to false to ignore animation.
 	// or simply
 horizontalCalendar.goToday(boolean immediate);
 ```
 
-- Check if two dates' **days** are equal:
-```java
-horizontalCalendar.isDatesDaysEquals(Date date1, Date date2);
-```
-
 - Check if a date is contained in the Calendar:
 ```java
-horizontalCalendar.contains(Date date);
+horizontalCalendar.contains(Calendar date);
+```
+
+- Check if two dates are equal (year, month, day of month):
+```java
+Utils.isSameDate(Calendar date1, Calendar date2);
+```
+
+- Get number of **days** between two dates:
+```java
+Utils.daysBetween(Calendar startInclusive, Calendar endExclusive);
 ```
 
 ## Contributing
