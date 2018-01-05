@@ -153,7 +153,7 @@ public final class HorizontalCalendar {
 //        int datePosition = positionOfDate(date);
         int datePosition = positionOfToday;
         if (immediate) {
-            centerToPositionWithNoAnimation(datePosition);
+            scrollToPositionWithNoAnimation(datePosition);
             if (calendarListener != null) {
                 calendarListener.onDateSelected(date, datePosition);
             }
