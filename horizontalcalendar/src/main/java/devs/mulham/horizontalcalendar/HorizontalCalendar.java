@@ -130,7 +130,6 @@ public final class HorizontalCalendar {
     public void selectDate(Calendar date, boolean immediate) {
 
         int datePosition = positionOfDate(date);
-//        int datePosition = positionOfToday;
         if (immediate) {
             centerToPositionWithNoAnimation(datePosition);
             if (calendarListener != null) {
@@ -162,6 +161,30 @@ public final class HorizontalCalendar {
             calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
             centerCalendarToPosition(datePosition);
         }
+    }
+
+    /**
+     * Scroll to next day
+     *
+     * @param date      The date to select
+     *
+     */
+    public void nextDay(Calendar date) {
+        date.add(date.DATE,1);
+        int datePosition = positionOfDate(date);
+        scrollToPositionWithNoAnimation(datePosition);
+    }
+
+    /**
+     * Scroll to previous day
+     *
+     * @param date      The date to select
+     *
+     */
+    public void previousDay(Calendar date) {
+        date.add(date.DATE,-1);
+        int datePosition = positionOfDate(date);
+        scrollToPositionWithNoAnimation(datePosition);
     }
 
     /**
@@ -221,6 +244,7 @@ public final class HorizontalCalendar {
 
                 if (calendarListener != null) {
                     calendarListener.onDateSelected(getDateAt(position), position);
+
                 }
                 final int oldSelectedItem = lastSelectedPosition;
                 calendarView.scrollToPosition(position);
