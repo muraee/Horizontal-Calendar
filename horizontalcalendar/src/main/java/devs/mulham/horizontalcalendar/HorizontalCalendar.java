@@ -39,12 +39,6 @@ public final class HorizontalCalendar {
     //Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
 
-    //Store today's position in adpater
-    public int positionOfToday;
-
-    //store position of last selected adapter position
-    private int lastSelectedPosition;
-
     //Interface events
     HorizontalCalendarListener calendarListener;
 
@@ -52,14 +46,13 @@ public final class HorizontalCalendar {
     /* Format, Colors & Font Sizes*/
     private final CalendarItemStyle defaultStyle;
     private final CalendarItemStyle selectedItemStyle;
-    private final CalendarItemStyle todayItemStyle;
     private final HorizontalCalendarConfig config;
     //endregion
 
     /**
      * Private Constructor to insure HorizontalCalendar can't be initiated the default way
      */
-    HorizontalCalendar(Builder builder, HorizontalCalendarConfig config, CalendarItemStyle defaultStyle, CalendarItemStyle selectedItemStyle,CalendarItemStyle todayItemStyle) {
+    HorizontalCalendar(Builder builder, HorizontalCalendarConfig config, CalendarItemStyle defaultStyle, CalendarItemStyle selectedItemStyle) {
         this.numberOfDatesOnScreen = builder.numberOfDatesOnScreen;
         this.calendarId = builder.viewId;
         this.startDate = builder.startDate;
@@ -67,7 +60,6 @@ public final class HorizontalCalendar {
         this.config = config;
         this.defaultStyle = defaultStyle;
         this.selectedItemStyle = selectedItemStyle;
-        this.todayItemStyle = todayItemStyle;
     }
 
     /* Init Calendar View */
@@ -94,8 +86,6 @@ public final class HorizontalCalendar {
         post(new Runnable() {
             @Override
             public void run() {
-                positionOfToday = positionOfDate(defaultSelectedDate);
-                lastSelectedPosition = positionOfToday;
                 centerToPositionWithNoAnimation(positionOfDate(defaultSelectedDate));
             }
         });
@@ -117,7 +107,7 @@ public final class HorizontalCalendar {
      *                  ,or false to play default scroll animation speed.
      */
     public void goToday(boolean immediate) {
-        selectTodayDate(Calendar.getInstance(), immediate);
+        selectDate(Calendar.getInstance(), immediate);
     }
 
     /**
@@ -128,31 +118,7 @@ public final class HorizontalCalendar {
      *                  ,or false to play default scroll animation speed.
      */
     public void selectDate(Calendar date, boolean immediate) {
-
         int datePosition = positionOfDate(date);
-//        int datePosition = positionOfToday;
-        if (immediate) {
-            centerToPositionWithNoAnimation(datePosition);
-            if (calendarListener != null) {
-                calendarListener.onDateSelected(date, datePosition);
-            }
-        } else {
-            calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
-            centerCalendarToPosition(datePosition);
-        }
-    }
-
-    /**
-     * Select the date and center the Horizontal Calendar to this date
-     *
-     * @param date      The date to select
-     * @param immediate pass true to make the calendar scroll as fast as possible to reach the target date
-     *                  ,or false to play default scroll animation speed.
-     */
-    public void selectTodayDate(Calendar date, boolean immediate) {
-
-//        int datePosition = positionOfDate(date);
-        int datePosition = positionOfToday;
         if (immediate) {
             centerToPositionWithNoAnimation(datePosition);
             if (calendarListener != null) {
@@ -205,38 +171,6 @@ public final class HorizontalCalendar {
         }
     }
 
-    /**
-     * Scroll Horizontal Calendar to  position and select the new day.
-     *
-     * @param position The position to center the calendar to!
-     */
-    public void scrollToPositionWithNoAnimation(final int position) {
-        if (position != -1) {
-//            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), getShiftCells());
-//            if (relativeCenterPosition == position) {
-//                return;
-//            }
-
-            if(lastSelectedPosition != -1){
-
-                if (calendarListener != null) {
-                    calendarListener.onDateSelected(getDateAt(position), position);
-                }
-                final int oldSelectedItem = lastSelectedPosition;
-                calendarView.scrollToPosition(position);
-                calendarView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        final int newSelectedItem = position;
-                        //refresh to update background colors
-                        refreshItemsSelector(newSelectedItem, oldSelectedItem);
-                        lastSelectedPosition = position;
-                    }
-                });
-            }
-        }
-    }
-
     void refreshItemsSelector(int position1, int... positions) {
         mCalendarAdapter.notifyItemChanged(position1, "UPDATE_SELECTOR");
         if ((positions != null) && (positions.length > 0)) {
@@ -282,8 +216,7 @@ public final class HorizontalCalendar {
      * @return position of selected date in Horizontal Calendar
      */
     public int getSelectedDatePosition() {
-        return lastSelectedPosition;
-//        return calendarView.getPositionOfCenterItem();
+        return calendarView.getPositionOfCenterItem();
     }
 
     /**
@@ -325,10 +258,6 @@ public final class HorizontalCalendar {
 
     public CalendarItemStyle getSelectedItemStyle() {
         return selectedItemStyle;
-    }
-
-    public CalendarItemStyle getTodayItemStyle() {
-        return todayItemStyle;
     }
 
     public HorizontalCalendarConfig getConfig() {
@@ -459,10 +388,9 @@ public final class HorizontalCalendar {
             }
             CalendarItemStyle defaultStyle = configBuilder.createDefaultStyle();
             CalendarItemStyle selectedItemStyle = configBuilder.createSelectedItemStyle();
-            CalendarItemStyle todayItemStyle = configBuilder.createTodayItemStyle();
             HorizontalCalendarConfig config = configBuilder.createConfig();
 
-            HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this, config, defaultStyle, selectedItemStyle,todayItemStyle);
+            HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this, config, defaultStyle, selectedItemStyle);
             horizontalCalendar.init(rootView, defaultSelectedDate, disablePredicate);
             return horizontalCalendar;
         }
