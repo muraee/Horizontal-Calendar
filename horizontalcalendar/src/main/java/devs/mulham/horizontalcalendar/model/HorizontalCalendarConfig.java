@@ -36,76 +36,85 @@ public class HorizontalCalendarConfig {
         this.selectorColor = selectorColor;
     }
 
-    public String getFormatTopText() {
-        return formatTopText;
+    public HorizontalCalendarConfig setFormatTopText(String formatTopText) {
+        this.formatTopText = formatTopText;
+        return this;
     }
 
-    public void setFormatTopText(String formatTopText) {
-        this.formatTopText = formatTopText;
+    public HorizontalCalendarConfig setFormatMiddleText(String formatMiddleText) {
+        this.formatMiddleText = formatMiddleText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setFormatBottomText(String formatBottomText) {
+        this.formatBottomText = formatBottomText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setSizeTopText(float sizeTopText) {
+        this.sizeTopText = sizeTopText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setSizeMiddleText(float sizeMiddleText) {
+        this.sizeMiddleText = sizeMiddleText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setSizeBottomText(float sizeBottomText) {
+        this.sizeBottomText = sizeBottomText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setSelectorColor(Integer selectorColor) {
+        this.selectorColor = selectorColor;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setShowTopText(boolean showTopText) {
+        this.showTopText = showTopText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setShowBottomText(boolean showBottomText) {
+        this.showBottomText = showBottomText;
+        return this;
+    }
+
+    public String getFormatTopText() {
+        return formatTopText;
     }
 
     public String getFormatMiddleText() {
         return formatMiddleText;
     }
 
-    public void setFormatMiddleText(String formatMiddleText) {
-        this.formatMiddleText = formatMiddleText;
-    }
-
     public String getFormatBottomText() {
         return formatBottomText;
-    }
-
-    public void setFormatBottomText(String formatBottomText) {
-        this.formatBottomText = formatBottomText;
     }
 
     public float getSizeTopText() {
         return sizeTopText;
     }
 
-    public void setSizeTopText(float sizeTopText) {
-        this.sizeTopText = sizeTopText;
-    }
-
     public float getSizeMiddleText() {
         return sizeMiddleText;
-    }
-
-    public void setSizeMiddleText(float sizeMiddleText) {
-        this.sizeMiddleText = sizeMiddleText;
     }
 
     public float getSizeBottomText() {
         return sizeBottomText;
     }
 
-    public void setSizeBottomText(float sizeBottomText) {
-        this.sizeBottomText = sizeBottomText;
-    }
-
     public Integer getSelectorColor() {
         return selectorColor;
-    }
-
-    public void setSelectorColor(Integer selectorColor) {
-        this.selectorColor = selectorColor;
     }
 
     public boolean isShowTopText() {
         return showTopText;
     }
 
-    public void setShowTopText(boolean showTopText) {
-        this.showTopText = showTopText;
-    }
-
     public boolean isShowBottomText() {
         return showBottomText;
-    }
-
-    public void setShowBottomText(boolean showBottomText) {
-        this.showBottomText = showBottomText;
     }
 
     public void setupDefaultValues(HorizontalCalendarConfig defaultConfig) {

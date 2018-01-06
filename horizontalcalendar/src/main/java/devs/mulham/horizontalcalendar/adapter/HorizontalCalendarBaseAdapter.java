@@ -20,7 +20,7 @@ import devs.mulham.horizontalcalendar.utils.Utils;
  * Base class for all adapters for {@link HorizontalCalendarView HorizontalCalendarView}
  *
  * @author Mulham-Raee
- * @since v1.2.7
+ * @since v1.3.0
  */
 public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T extends Calendar> extends RecyclerView.Adapter<VH> {
 

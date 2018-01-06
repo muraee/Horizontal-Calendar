@@ -13,7 +13,7 @@ import devs.mulham.horizontalcalendar.HorizontalCalendar;
 
 /**
  * @author Mulham-Raee
- * @since v1.2.7
+ * @since v1.3.0
  */
 public final class Utils {
 
@@ -48,7 +48,10 @@ public final class Utils {
         return relativeCenterPosition;
     }
 
-    public static boolean isSameDates(Calendar calendar1, Calendar calendar2){
+    /**
+     * @return <code>true</code> if dates are equal; <code>false</code> otherwise
+     */
+    public static boolean isSameDate(Calendar calendar1, Calendar calendar2){
         int day = calendar1.get(Calendar.DAY_OF_MONTH);
         int month = calendar1.get(Calendar.MONTH);
         int year = calendar1.get(Calendar.YEAR);

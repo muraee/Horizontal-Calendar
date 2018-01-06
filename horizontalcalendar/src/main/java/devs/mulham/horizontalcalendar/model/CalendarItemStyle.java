@@ -31,32 +31,36 @@ public class CalendarItemStyle {
         return colorTopText;
     }
 
-    public void setColorTopText(int colorTopText) {
+    public CalendarItemStyle setColorTopText(int colorTopText) {
         this.colorTopText = colorTopText;
+        return this;
     }
 
     public int getColorMiddleText() {
         return colorMiddleText;
     }
 
-    public void setColorMiddleText(int colorMiddleText) {
+    public CalendarItemStyle setColorMiddleText(int colorMiddleText) {
         this.colorMiddleText = colorMiddleText;
+        return this;
     }
 
     public int getColorBottomText() {
         return colorBottomText;
     }
 
-    public void setColorBottomText(int colorBottomText) {
+    public CalendarItemStyle setColorBottomText(int colorBottomText) {
         this.colorBottomText = colorBottomText;
+        return this;
     }
 
     public Drawable getBackground() {
         return background;
     }
 
-    public void setBackground(Drawable background) {
+    public CalendarItemStyle setBackground(Drawable background) {
         this.background = background;
+        return this;
     }
 
     public void setupDefaultValues(CalendarItemStyle defaultValues) {
