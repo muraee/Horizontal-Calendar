@@ -139,6 +139,7 @@ public class HorizontalCalendarView extends RecyclerView {
         selectedItemStyle = null;
 
         this.shiftCells = horizontalCalendar.getNumberOfDatesOnScreen() / 2;
+//        this.shiftCells = horizontalCalendar.getShiftCellsForWeekDay();
     }
 
     /**
