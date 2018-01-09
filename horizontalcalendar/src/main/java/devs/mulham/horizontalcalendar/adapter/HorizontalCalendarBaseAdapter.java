@@ -123,7 +123,7 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
             if (position == -1)
                 return;
 
-            horizontalCalendar.scrollToPositionWithNoAnimation(position);
+            horizontalCalendar.scrollToPositionWhenClicked(position);
 
 //            horizontalCalendar.getCalendarView().setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
 //            horizontalCalendar.centerCalendarToPosition(position);
