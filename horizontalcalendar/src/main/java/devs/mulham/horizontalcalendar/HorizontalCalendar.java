@@ -128,7 +128,7 @@ public final class HorizontalCalendar {
      *                  ,or false to play default scroll animation speed.
      */
     public void goToday(boolean immediate) {
-        selectTodayDate(getDateAt(positionOfToday), immediate);
+        scrollToTodayPositionWithNoAnimation(positionOfToday);
     }
 
     /**
@@ -152,27 +152,6 @@ public final class HorizontalCalendar {
         }
     }
 
-    /**
-     * Select the date and center the Horizontal Calendar to this date
-     *
-     * @param date      The date to select
-     * @param immediate pass true to make the calendar scroll as fast as possible to reach the target date
-     *                  ,or false to play default scroll animation speed.
-     */
-    public void selectTodayDate(Calendar date, boolean immediate) {
-
-//        int datePosition = positionOfDate(date);
-        int datePosition = positionOfToday;
-        if (immediate) {
-            scrollToPositionWithNoAnimation(datePosition);
-            if (calendarListener != null) {
-                calendarListener.onDateSelected(date, datePosition);
-            }
-        } else {
-            calendarView.setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_NORMAL);
-            centerCalendarToPosition(datePosition);
-        }
-    }
 
     /**
      * Check if given date is before last selected date
@@ -292,10 +271,6 @@ public final class HorizontalCalendar {
      */
     public void scrollToPositionWithNoAnimation(final int position) {
         if (position != -1) {
-//            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), getShiftCellsCenter());
-//            if (relativeCenterPosition == position) {
-//                return;
-//            }
 
             if(lastSelectedPosition != -1){
 
@@ -317,6 +292,50 @@ public final class HorizontalCalendar {
             }
         }
     }
+
+    /**
+     * Scroll Horizontal Calendar to today position and select today date.
+     *
+     * @param position The position to center the calendar to!
+     */
+    public void scrollToTodayPositionWithNoAnimation(final int position) {
+        if (position != -1) {
+            if(lastSelectedPosition != -1){
+
+                //call onDateSelected listener to update view
+                if (calendarListener != null) {
+                    calendarListener.onDateClicked(getDateAt(position), position);
+                }
+
+                int relativePosition = position;
+
+                //when scroll to left on weekly bar
+                if(position > calendarView.getPositionOfCenterItem())
+                    relativePosition = position + getShiftCellsForWeekDay();
+                    //when scroll to right on weekly bar
+                else if(position < calendarView.getPositionOfCenterItem())
+                    // -6 as cell position start with 0
+                    relativePosition = position + getShiftCellsForWeekDay() - 6;
+
+
+                //update day adapter layout in weekbar
+                final int oldSelectedItem = lastSelectedPosition;
+                calendarView.scrollToPosition(relativePosition);
+                calendarView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final int newSelectedItem = position;
+                        //refresh to update background colors
+                        refreshItemsSelector(newSelectedItem, oldSelectedItem);
+                        lastSelectedPosition = position;
+                    }
+                });
+            }
+        }
+    }
+
+
+
 
 
     /**
