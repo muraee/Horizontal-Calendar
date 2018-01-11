@@ -39,6 +39,13 @@ android {
         targetSdkVersion 26
         versionCode 2
         versionName "1.4.1"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    sourceSets {
+        androidTest {
+            setRoot('src/androidTest')
+        }
     }
     buildTypes {
         release {
@@ -52,8 +59,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.12.0'
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'org.mockito:mockito-core:2.12.0'
+
 }
 
 
