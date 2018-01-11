@@ -7,6 +7,6 @@ import android.test.AndroidTestRunner;
  */
 
 
-//@Runwith(AndroidJUnit4.class)
+//@RunWith(MockitoJUnitRunner.class)
 //public class HorizontalCalendarTest {
 //}
