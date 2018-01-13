@@ -79,8 +79,15 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
             }
         }
 
-        // Selected Day
-        if (position == selectedItemPosition) {
+        // Today's position
+        if(position == horizontalCalendar.positionOfToday){
+            applyStyle(viewHolder, horizontalCalendar.getTodayItemStyle());
+            if(position == selectedItemPosition){
+                viewHolder.selectionView.setVisibility(View.VISIBLE);
+            }else
+                viewHolder.selectionView.setVisibility(View.INVISIBLE);
+        }//Selected day
+        else if (position == selectedItemPosition) {
             applyStyle(viewHolder, horizontalCalendar.getSelectedItemStyle());
             viewHolder.selectionView.setVisibility(View.VISIBLE);
         }
@@ -116,8 +123,10 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
             if (position == -1)
                 return;
 
-            horizontalCalendar.getCalendarView().setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
-            horizontalCalendar.centerCalendarToPosition(position);
+            horizontalCalendar.scrollToPositionWhenClicked(position);
+
+//            horizontalCalendar.getCalendarView().setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
+//            horizontalCalendar.centerCalendarToPosition(position);
         }
     }
 

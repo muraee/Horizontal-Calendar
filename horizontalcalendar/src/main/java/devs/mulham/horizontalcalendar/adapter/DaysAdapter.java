@@ -94,7 +94,7 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
             throw new IndexOutOfBoundsException();
         }
 
-        int daysDiff = position - horizontalCalendar.getShiftCells();
+        int daysDiff = position - horizontalCalendar.getShiftCellsCenter();
 
         Calendar calendar = (Calendar) startDate.clone();
         calendar.add(Calendar.DATE, daysDiff);
@@ -112,6 +112,6 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
 
     private int calculateItemsCount(Calendar endDate) {
         int days = Utils.daysBetween(startDate, endDate) + 1;
-        return days + (horizontalCalendar.getShiftCells() * 2);
+        return days + (horizontalCalendar.getShiftCellsCenter() * 2);
     }
 }

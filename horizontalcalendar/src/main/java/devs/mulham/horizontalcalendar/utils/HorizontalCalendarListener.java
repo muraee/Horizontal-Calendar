@@ -19,4 +19,7 @@ public abstract class HorizontalCalendarListener {
         return false;
     }
 
+    public void onDateClicked(Calendar date, int position) {
+    }
+
 }

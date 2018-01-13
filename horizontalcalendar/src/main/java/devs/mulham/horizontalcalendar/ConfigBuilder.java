@@ -23,9 +23,9 @@ public class ConfigBuilder {
     private boolean showBottomText = true;
 
     /* Colors and Background*/
-    private int colorTextTop, colorTextTopSelected;
-    private int colorTextMiddle, colorTextMiddleSelected;
-    private int colorTextBottom, colorTextBottomSelected;
+    private int colorTextTop, colorTextTopSelected, colorTextTopToday;
+    private int colorTextMiddle, colorTextMiddleSelected, colorTextMiddleToday;
+    private int colorTextBottom, colorTextBottomSelected, colorTextBottomToday;
     private Drawable selectedItemBackground;
 
     private final HorizontalCalendar.Builder calendarBuilder;
@@ -109,7 +109,7 @@ public class ConfigBuilder {
         return this;
     }
 
-    public ConfigBuilder textColor(int textColorNormal, int textColorSelected) {
+    public ConfigBuilder textColor(int textColorNormal, int textColorSelected, int textColorToday) {
         colorTextTop = textColorNormal;
         colorTextMiddle = textColorNormal;
         colorTextBottom = textColorNormal;
@@ -117,24 +117,31 @@ public class ConfigBuilder {
         colorTextTopSelected = textColorSelected;
         colorTextMiddleSelected = textColorSelected;
         colorTextBottomSelected = textColorSelected;
+
+        colorTextTopToday = textColorToday;
+        colorTextMiddleToday = textColorToday;
+        colorTextBottomToday = textColorToday;
         return this;
     }
 
-    public ConfigBuilder colorTextTop(int textColorNormal, int textColorSelected) {
+    public ConfigBuilder colorTextTop(int textColorNormal, int textColorSelected, int textColorToday) {
         colorTextTop = textColorNormal;
         colorTextTopSelected = textColorSelected;
+        colorTextTopToday = textColorToday;
         return this;
     }
 
-    public ConfigBuilder colorTextMiddle(int textColorNormal, int textColorSelected) {
+    public ConfigBuilder colorTextMiddle(int textColorNormal, int textColorSelected,int textColorToday) {
         colorTextMiddle = textColorNormal;
         colorTextMiddleSelected = textColorSelected;
+        colorTextMiddleToday = textColorToday;
         return this;
     }
 
-    public ConfigBuilder colorTextBottom(int textColorNormal, int textColorSelected) {
+    public ConfigBuilder colorTextBottom(int textColorNormal, int textColorSelected,int textColorToday) {
         colorTextBottom = textColorNormal;
         colorTextBottomSelected = textColorSelected;
+        colorTextBottomToday = textColorToday;
         return this;
     }
 
@@ -173,5 +180,9 @@ public class ConfigBuilder {
 
     CalendarItemStyle createSelectedItemStyle() {
         return new CalendarItemStyle(colorTextTopSelected, colorTextMiddleSelected, colorTextBottomSelected, selectedItemBackground);
+    }
+
+    CalendarItemStyle createTodayItemStyle() {
+        return new CalendarItemStyle(colorTextTopToday, colorTextMiddleToday, colorTextBottomToday, selectedItemBackground);
     }
 }

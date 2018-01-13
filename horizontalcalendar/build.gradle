@@ -1,31 +1,30 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
+//apply plugin: 'com.jfrog.bintray'
+group='com.github.kaodim'
+//ext {
+//    bintrayRepo = 'maven'
+//    bintrayName = 'horizontal-calendar'
+//
+//    publishedGroupId = 'devs.mulham.horizontalcalendar'
+//    libraryName = 'Horizontal Calendar'
+//    artifact = 'horizontalcalendar'
+//
+//    libraryDescription = 'A material horizontal calendar view for Android based on RecyclerView'
+//
+//    siteUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar'
+////    gitUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar.git'
+//
+//    libraryVersion = '1.4.1'
+//
+//    developerId = 'mulham-raee'
+//    developerName = 'Mulham Raee'
+//    developerEmail = 'mulham.raee@gmail.com'
+//
+//    licenseName = 'The Apache Software License, Version 2.0'
+//    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//    allLicenses = ["Apache-2.0"]
+//}
 
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'horizontal-calendar'
-
-    publishedGroupId = 'devs.mulham.horizontalcalendar'
-    libraryName = 'Horizontal Calendar'
-    artifact = 'horizontalcalendar'
-
-    libraryDescription = 'A material horizontal calendar view for Android based on RecyclerView'
-
-    siteUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar'
-    gitUrl = 'https://github.com/Mulham-Raee/Horizontal-Calendar.git'
-
-    libraryVersion = '1.3.0'
-
-    developerId = 'mulham-raee'
-    developerName = 'Mulham Raee'
-    developerEmail = 'mulham.raee@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-
-version = libraryVersion
 
 android {
     compileSdkVersion 26
@@ -38,8 +37,15 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 1
-        versionName version
+        versionCode 2
+        versionName "1.4.1"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    sourceSets {
+        androidTest {
+            setRoot('src/androidTest')
+        }
     }
     buildTypes {
         release {
@@ -52,62 +58,66 @@ android {
 dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support:recyclerview-v7:26.1.0'
+
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'org.mockito:mockito-core:2.12.0'
+
 }
 
 
-if (project.hasProperty("android")) { // Android libraries
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-    }
+//if (project.hasProperty("android")) { // Android libraries
+//    task sourcesJar(type: Jar) {
+//        classifier = 'sources'
+//        from android.sourceSets.main.java.srcDirs
+//    }
+//
+//    task javadoc(type: Javadoc) {
+//        source = android.sourceSets.main.java.srcDirs
+//        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//    }
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+//
+//artifacts {
+//    archives javadocJar
+//    archives sourcesJar
+//}
 
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    }
-}
+//// Bintray
+//Properties properties = new Properties()
+//properties.load(project.rootProject.file('local.properties').newDataInputStream())
+//
+//bintray {
+//    user = properties.getProperty("bintray.user")
+//    key = properties.getProperty("bintray.apikey")
+//
+//    configurations = ['archives']
+//    pkg {
+//        repo = bintrayRepo
+//        name = bintrayName
+//        desc = libraryDescription
+//        websiteUrl = siteUrl
+//        vcsUrl = gitUrl
+//        licenses = allLicenses
+//        publish = true
+//        publicDownloadNumbers = true
+//        override = true
+//
+//        version {
+//            desc = libraryDescription
+//            name = libraryVersion
+//            vcsTag = 'v' + libraryVersion
+//            gpg {
+//                sign = true //Determines whether to GPG sign the files. The default is false
+//                passphrase = properties.getProperty("bintray.gpg.password")
+//                //Optional. The passphrase for GPG signing'
+//            }
+//        }
+//    }
+//}
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
-}
-
-// Bintray
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        repo = bintrayRepo
-        name = bintrayName
-        desc = libraryDescription
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = allLicenses
-        publish = true
-        publicDownloadNumbers = true
-        override = true
-
-        version {
-            desc = libraryDescription
-            name = libraryVersion
-            vcsTag = 'v' + libraryVersion
-            gpg {
-                sign = true //Determines whether to GPG sign the files. The default is false
-                passphrase = properties.getProperty("bintray.gpg.password")
-                //Optional. The passphrase for GPG signing'
-            }
-        }
-    }
-}
-
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
