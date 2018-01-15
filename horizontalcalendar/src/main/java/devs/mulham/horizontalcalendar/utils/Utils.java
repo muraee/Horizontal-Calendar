@@ -61,6 +61,28 @@ public final class Utils {
                 && (day == calendar2.get(Calendar.DAY_OF_MONTH));
     }
 
+    public static boolean isDateBefore(Calendar date, Calendar origin){
+        int dayOfYear = date.get(Calendar.DAY_OF_YEAR);
+        int year = date.get(Calendar.YEAR);
+
+        if (year < origin.get(Calendar.YEAR)){
+            return true;
+        }
+
+        return (year == origin.get(Calendar.YEAR)) && (dayOfYear < origin.get(Calendar.DAY_OF_YEAR));
+    }
+
+    public static boolean isDateAfter(Calendar date, Calendar origin){
+        int dayOfYear = date.get(Calendar.DAY_OF_YEAR);
+        int year = date.get(Calendar.YEAR);
+
+        if (year > origin.get(Calendar.YEAR)){
+            return true;
+        }
+
+        return (year == origin.get(Calendar.YEAR)) && (dayOfYear > origin.get(Calendar.DAY_OF_YEAR));
+    }
+
     public static int daysBetween(Calendar startInclusive, Calendar endExclusive){
         zeroTime(startInclusive);
         zeroTime(endExclusive);

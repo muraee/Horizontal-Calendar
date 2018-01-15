@@ -25,13 +25,13 @@ public class SampleFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_sample, container, false);
 
-        /* end after 1 month from now */
-        Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.MONTH, 1);
-
         /* start before 1 month from now */
         Calendar startDate = Calendar.getInstance();
         startDate.add(Calendar.MONTH, -1);
+
+        /* end after 1 month from now */
+        Calendar endDate = Calendar.getInstance();
+        endDate.add(Calendar.MONTH, 1);
 
         horizontalCalendar = new HorizontalCalendar.Builder(rootView, R.id.calendarView)
                 .range(startDate, endDate)

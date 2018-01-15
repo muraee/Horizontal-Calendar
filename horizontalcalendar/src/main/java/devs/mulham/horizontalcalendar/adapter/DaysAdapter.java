@@ -11,6 +11,7 @@ import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 import devs.mulham.horizontalcalendar.R;
 import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
+import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarPredicate;
 import devs.mulham.horizontalcalendar.utils.Utils;
 
@@ -27,8 +28,8 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
     private Calendar startDate;
     private int itemsCount;
 
-    public DaysAdapter(HorizontalCalendar horizontalCalendar, Calendar startDate, Calendar endDate, HorizontalCalendarPredicate disablePredicate) {
-        super(R.layout.hc_item_calendar, horizontalCalendar, disablePredicate);
+    public DaysAdapter(HorizontalCalendar horizontalCalendar, Calendar startDate, Calendar endDate, HorizontalCalendarPredicate disablePredicate, CalendarEventsPredicate eventsPredicate) {
+        super(R.layout.hc_item_calendar, horizontalCalendar, disablePredicate, eventsPredicate);
         this.startDate = startDate;
         itemsCount = calculateItemsCount(endDate);
     }
@@ -68,6 +69,7 @@ public class DaysAdapter extends HorizontalCalendarBaseAdapter<DateViewHolder, C
             holder.textBottom.setVisibility(View.GONE);
         }
 
+        showEvents(holder, day);
         applyStyle(holder, day, position);
 
     }

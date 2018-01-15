@@ -10,13 +10,14 @@ import devs.mulham.horizontalcalendar.R;
  * @author Mulham-Raee
  * @since v1.0.0
  */
-public class DateViewHolder extends RecyclerView.ViewHolder {
+class DateViewHolder extends RecyclerView.ViewHolder {
 
     TextView textTop;
     TextView textMiddle;
     TextView textBottom;
     View selectionView;
     View layoutContent;
+    RecyclerView eventsRecyclerView;
 
     DateViewHolder(View rootView) {
         super(rootView);
@@ -25,5 +26,6 @@ public class DateViewHolder extends RecyclerView.ViewHolder {
         textBottom = rootView.findViewById(R.id.hc_text_bottom);
         layoutContent = rootView.findViewById(R.id.hc_layoutContent);
         selectionView = rootView.findViewById(R.id.hc_selector);
+        eventsRecyclerView = rootView.findViewById(R.id.hc_events_recyclerView);
     }
 }

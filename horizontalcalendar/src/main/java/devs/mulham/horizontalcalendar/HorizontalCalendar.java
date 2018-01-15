@@ -13,6 +13,7 @@ import devs.mulham.horizontalcalendar.adapter.DaysAdapter;
 import devs.mulham.horizontalcalendar.adapter.HorizontalCalendarBaseAdapter;
 import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
+import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarPredicate;
 import devs.mulham.horizontalcalendar.utils.HorizontalSnapHelper;
@@ -63,7 +64,7 @@ public final class HorizontalCalendar {
     }
 
     /* Init Calendar View */
-    void init(View rootView, final Calendar defaultSelectedDate, HorizontalCalendarPredicate disablePredicate) {
+    void init(View rootView, final Calendar defaultSelectedDate, HorizontalCalendarPredicate disablePredicate, CalendarEventsPredicate eventsPredicate) {
         calendarView = rootView.findViewById(calendarId);
         calendarView.setHasFixedSize(true);
         calendarView.setHorizontalScrollBarEnabled(false);
@@ -78,7 +79,7 @@ public final class HorizontalCalendar {
             disablePredicate = new HorizontalCalendarPredicate.Or(disablePredicate, defaultDisablePredicate);
         }
 
-        mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate);
+        mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
         calendarView.setAdapter(mCalendarAdapter);
         calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
         calendarView.addOnScrollListener(new HorizontalCalendarScrollListener());
@@ -276,7 +277,7 @@ public final class HorizontalCalendar {
      * @return position of date in Calendar, or -1 if date does not exist
      */
     public int positionOfDate(Calendar date) {
-        if (date.before(startDate) || date.after(endDate)) {
+        if (Utils.isDateBefore(date, startDate) || Utils.isDateAfter(date, endDate)) {
             return -1;
         }
 
@@ -305,6 +306,8 @@ public final class HorizontalCalendar {
         int numberOfDatesOnScreen;
         // Specified which dates should be disabled
         private HorizontalCalendarPredicate disablePredicate;
+        // Add events to each Date
+        private CalendarEventsPredicate eventsPredicate;
 
         private ConfigBuilder configBuilder;
 
@@ -347,6 +350,11 @@ public final class HorizontalCalendar {
             return this;
         }
 
+        public Builder addEvents(CalendarEventsPredicate predicate) {
+            eventsPredicate = predicate;
+            return this;
+        }
+
         public ConfigBuilder configure() {
             if (configBuilder == null) {
                 configBuilder = new ConfigBuilder(this);
@@ -383,7 +391,7 @@ public final class HorizontalCalendar {
             HorizontalCalendarConfig config = configBuilder.createConfig();
 
             HorizontalCalendar horizontalCalendar = new HorizontalCalendar(this, config, defaultStyle, selectedItemStyle);
-            horizontalCalendar.init(rootView, defaultSelectedDate, disablePredicate);
+            horizontalCalendar.init(rootView, defaultSelectedDate, disablePredicate, eventsPredicate);
             return horizontalCalendar;
         }
     }
@@ -392,7 +400,7 @@ public final class HorizontalCalendar {
 
         @Override
         public boolean test(Calendar date) {
-            return date.before(startDate) || date.after(endDate);
+            return Utils.isDateBefore(date, startDate) || Utils.isDateAfter(date, endDate);
         }
 
         @Override

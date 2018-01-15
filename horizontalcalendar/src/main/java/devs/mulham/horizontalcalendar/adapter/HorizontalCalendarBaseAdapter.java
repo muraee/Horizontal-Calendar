@@ -1,17 +1,22 @@
 package devs.mulham.horizontalcalendar.adapter;
 
 import android.os.Build;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 import devs.mulham.horizontalcalendar.HorizontalLayoutManager;
 import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
+import devs.mulham.horizontalcalendar.model.CalendarEvent;
+import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarPredicate;
 import devs.mulham.horizontalcalendar.utils.Utils;
@@ -27,17 +32,19 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
     private final int itemResId;
     final HorizontalCalendar horizontalCalendar;
     private final HorizontalCalendarPredicate disablePredicate;
+    private final CalendarEventsPredicate eventsPredicate;
     private final int cellWidth;
 
     private CalendarItemStyle disabledItemStyle;
 
-    protected HorizontalCalendarBaseAdapter(int itemResId, final HorizontalCalendar horizontalCalendar, HorizontalCalendarPredicate disablePredicate) {
+    protected HorizontalCalendarBaseAdapter(int itemResId, final HorizontalCalendar horizontalCalendar, HorizontalCalendarPredicate disablePredicate, CalendarEventsPredicate eventsPredicate) {
         this.itemResId = itemResId;
         this.horizontalCalendar = horizontalCalendar;
         this.disablePredicate = disablePredicate;
         if (disablePredicate != null) {
             this.disabledItemStyle = disablePredicate.style();
         }
+        this.eventsPredicate = eventsPredicate;
 
         cellWidth = Utils.calculateCellWidth(horizontalCalendar.getContext(), horizontalCalendar.getNumberOfDatesOnScreen());
     }
@@ -50,7 +57,20 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         viewHolder.itemView.setOnClickListener(new MyOnClickListener(viewHolder));
         viewHolder.itemView.setOnLongClickListener(new MyOnLongClickListener(viewHolder));
 
+        if (eventsPredicate != null) {
+            initEventsRecyclerView(viewHolder.eventsRecyclerView);
+        } else {
+            viewHolder.eventsRecyclerView.setVisibility(View.GONE);
+        }
+
         return viewHolder;
+    }
+
+    private void initEventsRecyclerView(RecyclerView recyclerView) {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new EventsAdapter(Collections.<CalendarEvent>emptyList()));
+        GridLayoutManager layoutManager = new GridLayoutManager(recyclerView.getContext(), 4);
+        recyclerView.setLayoutManager(layoutManager);
     }
 
     protected abstract VH createViewHolder(View itemView, int cellWidth);
@@ -65,6 +85,20 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         return disablePredicate.test(date);
     }
 
+    protected void showEvents(VH viewHolder, Calendar date) {
+        if (eventsPredicate == null) {
+            return;
+        }
+
+        List<CalendarEvent> events = eventsPredicate.events(date);
+        if ((events == null) || events.isEmpty()) {
+            viewHolder.eventsRecyclerView.setVisibility(View.GONE);
+        } else {
+            viewHolder.eventsRecyclerView.setVisibility(View.VISIBLE);
+            EventsAdapter eventsAdapter = (EventsAdapter) viewHolder.eventsRecyclerView.getAdapter();
+            eventsAdapter.update(events);
+        }
+    }
 
     protected void applyStyle(VH viewHolder, Calendar date, int position) {
         int selectedItemPosition = horizontalCalendar.getSelectedDatePosition();

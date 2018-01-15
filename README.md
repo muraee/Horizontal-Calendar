@@ -46,13 +46,13 @@ The minimum API level supported by this library is **API 14 (ICE_CREAM_SANDWICH)
 - In your Activity or Fragment, define your **start** and **end** dates to set the range of the calendar:
 
 ```java
-/* end after 1 month from now */
-Calendar endDate = Calendar.getInstance();
-endDate.add(Calendar.MONTH, 1);
-
-/* start before 1 month from now */
+/* starts before 1 month from now */
 Calendar startDate = Calendar.getInstance();
 startDate.add(Calendar.MONTH, -1);
+
+/* ends after 1 month from now */
+Calendar endDate = Calendar.getInstance();
+endDate.add(Calendar.MONTH, 1);
 ```
 
 - Then setup `HorizontalCalendar` in your **Activity** through its Builder: 
@@ -135,7 +135,7 @@ HorizontalCalendar horizontalCalendar = new HorizontalCalendar.Builder(this, R.i
                     .selectedDateBackground(Drawable background)      // set selected date cell background.
                     .selectorColor(int color)               // set selection indicator bar's color (default to colorAccent).
                 .end()          // ends configuration.
-                .defaultSelectedDate(Date date)    // Date to be seleceted at start (default to current day `new Date()`).
+                .defaultSelectedDate(Calendar date)    // Date to be selected at start (default to current day `Calendar.getInstance()`).
                 .build();
 ```
 
@@ -151,6 +151,19 @@ builder.configure()
            .colorTextMiddle(int normalColor, int selectedColor)
            .colorTextBottom(int normalColor, int selectedColor)
        .end()
+```
+
+## Events
+A list of Events can be provided for each Date which will be represented as circle indicators under the Date with:
+
+```java
+builder.addEvents(new CalendarEventsPredicate() {
+
+                    @Override
+                    public List<CalendarEvent> events(Calendar date) {
+                        // test the date and return a list of CalendarEvent to assosiate with this Date.
+                    }
+                })
 ```
 
 ## Reconfiguration
@@ -186,7 +199,7 @@ horizontalCalendar.getConfig()
         ..............
 ```
 
-#### Important
+### Important
 **Make sure to call `horizontalCalendar.refresh();` when you finish your changes**
 
 ## Features
