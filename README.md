@@ -5,7 +5,7 @@
 
 A material horizontal calendar view for Android based on `RecyclerView`.
 
-![demo](/art/demo.gif)
+![showcase](/art/showCase.png)
 
 ## Installation
 
