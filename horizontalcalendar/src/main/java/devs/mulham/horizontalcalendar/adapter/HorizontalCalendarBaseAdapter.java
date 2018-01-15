@@ -131,9 +131,9 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         viewHolder.textBottom.setTextColor(itemStyle.getColorBottomText());
 
         if (Build.VERSION.SDK_INT >= 16) {
-            viewHolder.layoutContent.setBackground(itemStyle.getBackground());
+            viewHolder.itemView.setBackground(itemStyle.getBackground());
         } else {
-            viewHolder.layoutContent.setBackgroundDrawable(itemStyle.getBackground());
+            viewHolder.itemView.setBackgroundDrawable(itemStyle.getBackground());
         }
     }
 
