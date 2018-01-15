@@ -21,7 +21,6 @@ import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.model.CalendarEvent;
 import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
-import devs.mulham.horizontalcalendar.utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
 
