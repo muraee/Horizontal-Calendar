@@ -14,7 +14,7 @@ import android.util.DisplayMetrics;
  */
 public class HorizontalLayoutManager extends LinearLayoutManager {
 
-    public static final float SPEED_NORMAL = 40f;
+    public static final float SPEED_NORMAL = 90f;
     public static final float SPEED_SLOW = 125f;
 
     float smoothScrollSpeed = SPEED_NORMAL;

@@ -138,7 +138,7 @@ public final class HorizontalCalendar {
      */
     public void centerCalendarToPosition(final int position) {
         if (position != -1) {
-            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), getShiftCells());
+            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), numberOfDatesOnScreen / 2);
             if (relativeCenterPosition == position) {
                 return;
             }
@@ -154,12 +154,12 @@ public final class HorizontalCalendar {
      */
     void centerToPositionWithNoAnimation(final int position) {
         if (position != -1) {
-            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, calendarView.getPositionOfCenterItem(), getShiftCells());
+            final int oldSelectedItem = calendarView.getPositionOfCenterItem();
+            int relativeCenterPosition = Utils.calculateRelativeCenterPosition(position, oldSelectedItem, numberOfDatesOnScreen / 2);
             if (relativeCenterPosition == position) {
                 return;
             }
 
-            final int oldSelectedItem = calendarView.getPositionOfCenterItem();
             calendarView.scrollToPosition(relativeCenterPosition);
             calendarView.post(new Runnable() {
                 @Override
