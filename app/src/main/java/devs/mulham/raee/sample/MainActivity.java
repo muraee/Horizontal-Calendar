@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* end after 2 months from now */
         Calendar endDate = Calendar.getInstance();
-        endDate.add(Calendar.MONTH, 2);
+        endDate.add(Calendar.MONTH, 0);
 
         // Default Date set to Today.
         final Calendar defaultSelectedDate = Calendar.getInstance();

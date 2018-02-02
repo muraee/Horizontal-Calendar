@@ -14,8 +14,8 @@ import java.util.List;
 import devs.mulham.horizontalcalendar.HorizontalCalendar;
 import devs.mulham.horizontalcalendar.HorizontalCalendarView;
 import devs.mulham.horizontalcalendar.HorizontalLayoutManager;
-import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 import devs.mulham.horizontalcalendar.model.CalendarEvent;
+import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarListener;
 import devs.mulham.horizontalcalendar.utils.HorizontalCalendarPredicate;
@@ -34,19 +34,23 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
     private final HorizontalCalendarPredicate disablePredicate;
     private final CalendarEventsPredicate eventsPredicate;
     private final int cellWidth;
-
     private CalendarItemStyle disabledItemStyle;
 
-    protected HorizontalCalendarBaseAdapter(int itemResId, final HorizontalCalendar horizontalCalendar, HorizontalCalendarPredicate disablePredicate, CalendarEventsPredicate eventsPredicate) {
+    protected Calendar startDate;
+    protected int itemsCount;
+
+    protected HorizontalCalendarBaseAdapter(int itemResId, final HorizontalCalendar horizontalCalendar, Calendar startDate, Calendar endDate, HorizontalCalendarPredicate disablePredicate, CalendarEventsPredicate eventsPredicate) {
         this.itemResId = itemResId;
         this.horizontalCalendar = horizontalCalendar;
         this.disablePredicate = disablePredicate;
+        this.startDate = startDate;
         if (disablePredicate != null) {
             this.disabledItemStyle = disablePredicate.style();
         }
         this.eventsPredicate = eventsPredicate;
 
         cellWidth = Utils.calculateCellWidth(horizontalCalendar.getContext(), horizontalCalendar.getNumberOfDatesOnScreen());
+        itemsCount = calculateItemsCount(startDate, endDate);
     }
 
     @Override
@@ -76,6 +80,11 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
     protected abstract VH createViewHolder(View itemView, int cellWidth);
 
     public abstract T getItem(int position);
+
+    @Override
+    public int getItemCount() {
+        return itemsCount;
+    }
 
     public boolean isDisabled(int position) {
         if (disablePredicate == null) {
@@ -137,6 +146,16 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         }
     }
 
+    public void update(Calendar startDate, Calendar endDate, boolean notify) {
+        this.startDate = startDate;
+        itemsCount = calculateItemsCount(startDate, endDate);
+        if (notify) {
+            notifyDataSetChanged();
+        }
+    }
+
+    protected abstract int calculateItemsCount(Calendar startDate, Calendar endDate);
+
     private class MyOnClickListener implements View.OnClickListener {
         private final RecyclerView.ViewHolder viewHolder;
 
@@ -164,13 +183,15 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
 
         @Override
         public boolean onLongClick(View v) {
+            HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
+            if (calendarListener == null) {
+                return false;
+            }
+
             int position = viewHolder.getAdapterPosition();
             Calendar date = getItem(position);
-            HorizontalCalendarListener calendarListener = horizontalCalendar.getCalendarListener();
-            if (calendarListener != null) {
-                return calendarListener.onDateLongClicked(date, position);
-            }
-            return false;
+
+            return calendarListener.onDateLongClicked(date, position);
         }
     }
 }

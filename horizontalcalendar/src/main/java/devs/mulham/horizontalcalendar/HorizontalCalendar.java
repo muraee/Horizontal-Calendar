@@ -11,6 +11,7 @@ import java.util.Calendar;
 
 import devs.mulham.horizontalcalendar.adapter.DaysAdapter;
 import devs.mulham.horizontalcalendar.adapter.HorizontalCalendarBaseAdapter;
+import devs.mulham.horizontalcalendar.adapter.MonthsAdapter;
 import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
 import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
@@ -29,18 +30,22 @@ import devs.mulham.horizontalcalendar.utils.Utils;
  */
 public final class HorizontalCalendar {
 
+    public enum Mode {DAYS, MONTHS}
+
     //region private Fields
     HorizontalCalendarView calendarView;
     private HorizontalCalendarBaseAdapter mCalendarAdapter;
 
-    //Start & End Dates
+    // Start & End Dates
     Calendar startDate;
     Calendar endDate;
 
-    //Number of Dates to Show on Screen
+    // Calendar Mode
+    private Mode mode;
+    // Number of Dates to Show on Screen
     private final int numberOfDatesOnScreen;
 
-    //Interface events
+    // Interface events
     HorizontalCalendarListener calendarListener;
 
     private final int calendarId;
@@ -61,6 +66,7 @@ public final class HorizontalCalendar {
         this.config = config;
         this.defaultStyle = defaultStyle;
         this.selectedItemStyle = selectedItemStyle;
+        this.mode = builder.mode;
     }
 
     /* Init Calendar View */
@@ -79,7 +85,12 @@ public final class HorizontalCalendar {
             disablePredicate = new HorizontalCalendarPredicate.Or(disablePredicate, defaultDisablePredicate);
         }
 
-        mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
+        if (mode == Mode.MONTHS){
+            mCalendarAdapter = new MonthsAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
+        } else {
+            mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
+        }
+
         calendarView.setAdapter(mCalendarAdapter);
         calendarView.setLayoutManager(new HorizontalLayoutManager(calendarView.getContext(), false));
         calendarView.addOnScrollListener(new HorizontalCalendarScrollListener());
@@ -185,7 +196,7 @@ public final class HorizontalCalendar {
         return mCalendarAdapter.isDisabled(position);
     }
 
-    public void refresh(){
+    public void refresh() {
         mCalendarAdapter.notifyDataSetChanged();
     }
 
@@ -245,12 +256,10 @@ public final class HorizontalCalendar {
         return calendarView.getContext();
     }
 
-    public void setRange(Calendar startDate, Calendar endDate){
+    public void setRange(Calendar startDate, Calendar endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-       if (mCalendarAdapter instanceof DaysAdapter){
-           ((DaysAdapter) mCalendarAdapter).update(startDate, endDate, false);
-       }
+        mCalendarAdapter.update(startDate, endDate, false);
     }
 
     public CalendarItemStyle getDefaultStyle() {
@@ -282,13 +291,21 @@ public final class HorizontalCalendar {
         }
 
         int position;
-        if (Utils.isSameDate(date, startDate)) {
-            position = 0;
+        if (mode == Mode.DAYS){
+            if (Utils.isSameDate(date, startDate)) {
+                position = 0;
+            } else {
+                position = Utils.daysBetween(startDate, date);
+            }
         } else {
-            position = Utils.daysBetween(startDate, date);
+            if (Utils.isSameMonth(date, startDate)) {
+                position = 0;
+            } else {
+                position = Utils.monthsBetween(startDate, date);
+            }
         }
 
-        final int shiftCells = getShiftCells();
+        final int shiftCells = numberOfDatesOnScreen / 2;
         return position + shiftCells;
     }
 
@@ -302,6 +319,7 @@ public final class HorizontalCalendar {
         Calendar endDate;
         Calendar defaultSelectedDate;
 
+        Mode mode;
         // Number of Days to Show on Screen
         int numberOfDatesOnScreen;
         // Specified which dates should be disabled
@@ -332,6 +350,11 @@ public final class HorizontalCalendar {
         public Builder range(Calendar startDate, Calendar endDate) {
             this.startDate = startDate;
             this.endDate = endDate;
+            return this;
+        }
+
+        public Builder mode(Mode mode) {
+            this.mode = mode;
             return this;
         }
 
@@ -367,6 +390,10 @@ public final class HorizontalCalendar {
             /* Defaults variables */
             if ((startDate == null) || (endDate == null)) {
                 throw new IllegalStateException("HorizontalCalendar range was not specified, either startDate or endDate is null!");
+            }
+
+            if (mode == null) {
+                mode = Mode.DAYS;
             }
             if (numberOfDatesOnScreen <= 0) {
                 numberOfDatesOnScreen = 5;

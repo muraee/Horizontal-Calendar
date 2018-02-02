@@ -53,12 +53,17 @@ public final class Utils {
      */
     public static boolean isSameDate(Calendar calendar1, Calendar calendar2){
         int day = calendar1.get(Calendar.DAY_OF_MONTH);
+
+        return isSameMonth(calendar1, calendar2)
+                && (day == calendar2.get(Calendar.DAY_OF_MONTH));
+    }
+
+    public static boolean isSameMonth(Calendar calendar1, Calendar calendar2){
         int month = calendar1.get(Calendar.MONTH);
         int year = calendar1.get(Calendar.YEAR);
 
         return (year == calendar2.get(Calendar.YEAR))
-                && (month == calendar2.get(Calendar.MONTH))
-                && (day == calendar2.get(Calendar.DAY_OF_MONTH));
+                && (month == calendar2.get(Calendar.MONTH));
     }
 
     public static boolean isDateBefore(Calendar date, Calendar origin){
@@ -89,6 +94,18 @@ public final class Utils {
 
         long diff = endExclusive.getTimeInMillis() - startInclusive.getTimeInMillis(); //result in millis
         return (int) TimeUnit.MILLISECONDS.toDays(diff);
+    }
+
+    public static int monthsBetween(Calendar startInclusive, Calendar endExclusive){
+        int startMonth = startInclusive.get(Calendar.MONTH);
+        int endMonth = endExclusive.get(Calendar.MONTH);
+
+        int startYear = startInclusive.get(Calendar.YEAR);
+        int endYear = endExclusive.get(Calendar.YEAR);
+
+        int yearsDiff = endYear - startYear;
+
+        return (endMonth - startMonth) + (yearsDiff * 12);
     }
 
     public static void zeroTime(Calendar calendar){

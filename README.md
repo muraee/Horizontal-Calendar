@@ -17,7 +17,7 @@ repositories {
     }
     
 dependencies {
-      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.3.2'
+      compile 'devs.mulham.horizontalcalendar:horizontalcalendar:1.3.4'
     }
 ```
 
@@ -151,6 +151,24 @@ builder.configure()
            .colorTextMiddle(int normalColor, int selectedColor)
            .colorTextBottom(int normalColor, int selectedColor)
        .end()
+```
+
+## Months Mode
+HorizontalCalendar can display only **Months** instead of Dates by adding `mode(HorizontalCalendar.Mode.MONTHS)` to the builder, for example:
+
+```java
+horizontalCalendar = new HorizontalCalendar.Builder(this, R.id.calendarView)
+                .range(Calendar startDate, Calendar endDate)
+                .datesNumberOnScreen(int number)
+                .mode(HorizontalCalendar.Mode.MONTHS)
+                .configure()
+                    .formatMiddleText("MMM")
+                    .formatBottomText("yyyy")
+                    .showTopText(false)
+                    .showBottomText(true)
+                    .textColor(Color.LTGRAY, Color.WHITE)
+                .end()
+                .defaultSelectedDate(defaultSelectedDate)
 ```
 
 ## Events
