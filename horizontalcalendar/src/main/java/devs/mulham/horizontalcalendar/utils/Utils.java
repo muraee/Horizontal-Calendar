@@ -13,6 +13,7 @@ import devs.mulham.horizontalcalendar.HorizontalCalendar;
 
 /**
  * @author Mulham-Raee
+ * @author Ian Mcxa
  * @since v1.3.0
  */
 public final class Utils {
@@ -113,5 +114,6 @@ public final class Utils {
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.DST_OFFSET, 0);
     }
 }
