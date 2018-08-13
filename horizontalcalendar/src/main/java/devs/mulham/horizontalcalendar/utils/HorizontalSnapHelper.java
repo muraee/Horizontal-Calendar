@@ -29,7 +29,9 @@ public class HorizontalSnapHelper extends LinearSnapHelper {
             } else {
                 int[] snapDistance = calculateDistanceToFinalSnap(layoutManager, snapView);
                 if ((snapDistance[0] != 0) || (snapDistance[1] != 0)){
-                    return snapView;
+                    if ((snapDistance[0] != -1) && (snapDistance[0] != -2)){
+                        return snapView;
+                    }
                 }
                 selectedItemPosition = layoutManager.getPosition(snapView);
             }
