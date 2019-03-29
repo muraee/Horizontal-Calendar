@@ -1,10 +1,14 @@
 package devs.mulham.horizontalcalendar.adapter;
 
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 import java.util.Calendar;
@@ -36,6 +40,7 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
     private final int cellWidth;
     private CalendarItemStyle disabledItemStyle;
 
+
     protected Calendar startDate;
     protected int itemsCount;
 
@@ -60,6 +65,7 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         final VH viewHolder = createViewHolder(itemView, cellWidth);
         viewHolder.itemView.setOnClickListener(new MyOnClickListener(viewHolder));
         viewHolder.itemView.setOnLongClickListener(new MyOnLongClickListener(viewHolder));
+
 
         if (eventsPredicate != null) {
             initEventsRecyclerView(viewHolder.eventsRecyclerView);
@@ -154,24 +160,59 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         }
     }
 
+
+
     protected abstract int calculateItemsCount(Calendar startDate, Calendar endDate);
 
+
     private class MyOnClickListener implements View.OnClickListener {
+        private int timeDoubleClick;
+        private Handler handler;
+        private long timeFirstClick;
         private final RecyclerView.ViewHolder viewHolder;
 
         MyOnClickListener(RecyclerView.ViewHolder viewHolder) {
             this.viewHolder = viewHolder;
+            timeDoubleClick = ViewConfiguration.getDoubleTapTimeout();
+            timeFirstClick = 0L;
+            handler = new Handler(Looper.getMainLooper());
         }
 
         @Override
         public void onClick(View v) {
-            int position = viewHolder.getAdapterPosition();
-            if (position == -1)
+            long now = System.currentTimeMillis();
+            final int position = viewHolder.getAdapterPosition();
+            if (position == -1){
                 return;
+            }else if (now - timeFirstClick < timeDoubleClick) {
+                handler.removeCallbacksAndMessages(null);
+                timeFirstClick = 0L;
+                DoubleClick(position);
+            }else {
+                timeFirstClick = now;
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        SingleClick(position);
+                        timeFirstClick = 0L;
+                    }
+                }, timeDoubleClick);
+            }
 
+        }
+
+        public void SingleClick(int position){
+            Log.i("signle","click");
             horizontalCalendar.getCalendarView().setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
             horizontalCalendar.centerCalendarToPosition(position);
         }
+
+        public void DoubleClick(int position){
+            Log.i("double","click");
+            horizontalCalendar.getCalendarView().setSmoothScrollSpeed(HorizontalLayoutManager.SPEED_SLOW);
+            horizontalCalendar.centerCalendarToPosition(position);
+        }
+
     }
 
     private class MyOnLongClickListener implements View.OnLongClickListener {
@@ -195,3 +236,4 @@ public abstract class HorizontalCalendarBaseAdapter<VH extends DateViewHolder, T
         }
     }
 }
+
