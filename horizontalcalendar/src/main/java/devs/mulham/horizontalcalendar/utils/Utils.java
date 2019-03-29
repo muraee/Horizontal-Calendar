@@ -13,7 +13,6 @@ import devs.mulham.horizontalcalendar.HorizontalCalendar;
 
 /**
  * @author Mulham-Raee
- * @author Ian Mcxa
  * @since v1.3.0
  */
 public final class Utils {
