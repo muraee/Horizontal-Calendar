@@ -108,6 +108,13 @@ public final class Utils {
         return (endMonth - startMonth) + (yearsDiff * 12);
     }
 
+    public static int yearsBetween(Calendar startInclusive, Calendar endExclusive){
+        int startYear = startInclusive.get(Calendar.YEAR);
+        int endYear = endExclusive.get(Calendar.YEAR);
+
+        return endYear - startYear;
+    }
+
     public static void zeroTime(Calendar calendar){
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
