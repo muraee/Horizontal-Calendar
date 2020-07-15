@@ -31,5 +31,8 @@
         <!-- Bottom text size -->
         <attr name="sizeBottomText" format="dimension" />
 
+        <!-- Text font style -->
+        <attr name="textFontFamily" format="reference" />
+
     </declare-styleable>
 </resources>

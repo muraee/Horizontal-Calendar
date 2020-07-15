@@ -3,10 +3,12 @@ package devs.mulham.horizontalcalendar;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import devs.mulham.horizontalcalendar.adapter.HorizontalCalendarBaseAdapter;
@@ -60,9 +62,14 @@ public class HorizontalCalendarView extends RecyclerView {
             float sizeBottomText = getRawSizeValue(a, R.styleable.HorizontalCalendarView_sizeBottomText,
                     HorizontalCalendarConfig.DEFAULT_SIZE_TEXT_BOTTOM);
 
+            int fontFamilyResId = a.getResourceId(R.styleable.HorizontalCalendarView_textFontFamily, -1);
+            Typeface textFontFamily = null;
+            if (fontFamilyResId != -1) {
+                textFontFamily = ResourcesCompat.getFont(context, fontFamilyResId);
+            }
 
-            defaultStyle = new CalendarItemStyle(colorTopText, colorMiddleText, colorBottomText, null);
-            selectedItemStyle = new CalendarItemStyle(colorTopTextSelected, colorMiddleTextSelected, colorBottomTextSelected, selectedDateBackground);
+            defaultStyle = new CalendarItemStyle(colorTopText, colorMiddleText, colorBottomText, null, textFontFamily);
+            selectedItemStyle = new CalendarItemStyle(colorTopTextSelected, colorMiddleTextSelected, colorBottomTextSelected, selectedDateBackground, textFontFamily);
             config = new HorizontalCalendarConfig(sizeTopText, sizeMiddleText, sizeBottomText, selectorColor);
 
         } finally {
