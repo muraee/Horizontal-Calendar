@@ -1,5 +1,7 @@
 package devs.mulham.horizontalcalendar.model;
 
+import android.graphics.Typeface;
+
 /**
  * @author Mulham-Raee
  * @since v1.2.5
@@ -21,6 +23,7 @@ public class HorizontalCalendarConfig {
     private float sizeTopText;
     private float sizeMiddleText;
     private float sizeBottomText;
+    private Typeface textTypeface;
 
     private Integer selectorColor;
     private boolean showTopText;
@@ -78,6 +81,11 @@ public class HorizontalCalendarConfig {
 
     public HorizontalCalendarConfig setShowBottomText(boolean showBottomText) {
         this.showBottomText = showBottomText;
+        return this;
+    }
+
+    public HorizontalCalendarConfig setTextTypeface(Typeface typeface) {
+        this.textTypeface = typeface;
         return this;
     }
 

@@ -1,5 +1,6 @@
 package devs.mulham.horizontalcalendar.model;
 
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
 /**
@@ -12,19 +13,21 @@ public class CalendarItemStyle {
     private int colorMiddleText;
     private int colorBottomText;
     private Drawable background;
+    private Typeface textFontFamily;
 
-    public CalendarItemStyle(){
+    public CalendarItemStyle() {
     }
 
     public CalendarItemStyle(int textColor, Drawable background) {
-        this(textColor, textColor, textColor, background);
+        this(textColor, textColor, textColor, background, null);
     }
 
-    public CalendarItemStyle(int colorTopText, int colorMiddleText, int colorBottomText, Drawable background) {
+    public CalendarItemStyle(int colorTopText, int colorMiddleText, int colorBottomText, Drawable background, Typeface textFontFamily) {
         this.colorTopText = colorTopText;
         this.colorMiddleText = colorMiddleText;
         this.colorBottomText = colorBottomText;
         this.background = background;
+        this.textFontFamily = textFontFamily;
     }
 
     public int getColorTopText() {
@@ -63,6 +66,15 @@ public class CalendarItemStyle {
         return this;
     }
 
+    public Typeface getTextFontFamily() {
+        return textFontFamily;
+    }
+
+    public CalendarItemStyle setTextFontFamily(Typeface typeface) {
+        this.textFontFamily = typeface;
+        return this;
+    }
+
     public void setupDefaultValues(CalendarItemStyle defaultValues) {
         if (defaultValues == null) {
             return;
@@ -78,6 +90,9 @@ public class CalendarItemStyle {
         }
         if (background == null) {
             background = defaultValues.background;
+        }
+        if (textFontFamily == null) {
+            textFontFamily = defaultValues.textFontFamily;
         }
     }
 }

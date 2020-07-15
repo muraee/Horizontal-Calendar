@@ -1,5 +1,6 @@
 package devs.mulham.horizontalcalendar;
 
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 
 import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
@@ -21,6 +22,7 @@ public class ConfigBuilder {
     private String formatBottomText;
     private boolean showTopText = true;
     private boolean showBottomText = true;
+    private Typeface textTypeface;
 
     /* Colors and Background*/
     private int colorTextTop, colorTextTopSelected;
@@ -138,6 +140,11 @@ public class ConfigBuilder {
         return this;
     }
 
+    public ConfigBuilder typeFace(Typeface typeface) {
+        textTypeface = typeface;
+        return this;
+    }
+
     public ConfigBuilder selectedDateBackground(Drawable background) {
         this.selectedItemBackground = background;
         return this;
@@ -163,15 +170,16 @@ public class ConfigBuilder {
         config.setFormatBottomText(formatBottomText);
         config.setShowTopText(showTopText);
         config.setShowBottomText(showBottomText);
+        config.setTextTypeface(textTypeface);
 
         return config;
     }
 
     CalendarItemStyle createDefaultStyle() {
-        return new CalendarItemStyle(colorTextTop, colorTextMiddle, colorTextBottom, null);
+        return new CalendarItemStyle(colorTextTop, colorTextMiddle, colorTextBottom, null, textTypeface);
     }
 
     CalendarItemStyle createSelectedItemStyle() {
-        return new CalendarItemStyle(colorTextTopSelected, colorTextMiddleSelected, colorTextBottomSelected, selectedItemBackground);
+        return new CalendarItemStyle(colorTextTopSelected, colorTextMiddleSelected, colorTextBottomSelected, selectedItemBackground, textTypeface);
     }
 }
