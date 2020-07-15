@@ -4,14 +4,16 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Calendar;
 
 import devs.mulham.horizontalcalendar.adapter.DaysAdapter;
 import devs.mulham.horizontalcalendar.adapter.HorizontalCalendarBaseAdapter;
 import devs.mulham.horizontalcalendar.adapter.MonthsAdapter;
+import devs.mulham.horizontalcalendar.adapter.YearsAdapter;
 import devs.mulham.horizontalcalendar.model.CalendarItemStyle;
 import devs.mulham.horizontalcalendar.model.HorizontalCalendarConfig;
 import devs.mulham.horizontalcalendar.utils.CalendarEventsPredicate;
@@ -30,7 +32,7 @@ import devs.mulham.horizontalcalendar.utils.Utils;
  */
 public final class HorizontalCalendar {
 
-    public enum Mode {DAYS, MONTHS}
+    public enum Mode {DAYS, MONTHS, YEARS}
 
     //region private Fields
     HorizontalCalendarView calendarView;
@@ -85,7 +87,9 @@ public final class HorizontalCalendar {
             disablePredicate = new HorizontalCalendarPredicate.Or(disablePredicate, defaultDisablePredicate);
         }
 
-        if (mode == Mode.MONTHS){
+        if (mode == Mode.YEARS){
+            mCalendarAdapter = new YearsAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
+        } else if (mode == Mode.MONTHS){
             mCalendarAdapter = new MonthsAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
         } else {
             mCalendarAdapter = new DaysAdapter(this, startDate, endDate, disablePredicate, eventsPredicate);
